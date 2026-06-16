@@ -1,0 +1,1685 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>گالری طرح‌های DXF v6 | CNC LAND</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#09111f">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+/* ── تعریف تم تاریکِ اختصاصی لوکس برای CNC LAND ── */
+:root {
+  --color-background-primary: #0F1015;
+  --color-background-secondary: #161822;
+  --color-border-secondary: #2A2E3D;
+  --color-border-tertiary: #1E212B;
+  --color-text-primary: #F3F4F6;
+  --color-text-secondary: #9CA3AF;
+  --color-text-tertiary: #6B7280;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Tahoma,'Segoe UI',sans-serif;direction:rtl;font-size:13px;background:var(--color-background-primary);color:var(--color-text-primary)}
+
+/* ── Layout ── */
+.app{display:flex;height:100vh;overflow:hidden}
+.sidebar{width:200px;flex-shrink:0;border-left:.5px solid var(--color-border-tertiary);display:flex;flex-direction:column;background:var(--color-background-secondary)}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+
+/* ── Sidebar ── */
+.sidebar-header{padding:14px 14px 10px;border-bottom:.5px solid var(--color-border-tertiary)}
+.sidebar-header h1{font-size:14px;font-weight:600;color:#00F0FF;display:flex;align-items:center;gap:6px;text-shadow: 0 0 8px rgba(0,240,255,0.3)}
+.sidebar-header p{font-size:10px;color:var(--color-text-secondary);margin-top:2px}
+.cat-section{padding:10px 10px 6px;font-size:10px;font-weight:600;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:.5px}
+.cat-list{flex:1;overflow-y:auto;padding:0 6px}
+.cat-item{display:flex;align-items:center;gap:7px;padding:7px 8px;border-radius:8px;cursor:pointer;border:none;background:none;font-family:inherit;font-size:12px;color:var(--color-text-primary);width:100%;text-align:right;transition:.12s;position:relative}
+.cat-item:hover{background:var(--color-background-primary)}
+.cat-item.active{background:#378ADD;color:#fff}
+.cat-item .ci{font-size:15px;opacity:.7;flex-shrink:0}
+.cat-item.active .ci{opacity:1}
+.cat-item .cn{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cat-item .cc{font-size:10px;background:rgba(0,0,0,.2);padding:1px 6px;border-radius:10px;flex-shrink:0;color:var(--color-text-secondary)}
+.cat-item.active .cc{background:rgba(255,255,255,.25);color:#fff}
+.cat-item.drop-over{background:#112942!important;border:1.5px dashed #378ADD;color:#378ADD}
+.cat-sep{height:.5px;background:var(--color-border-tertiary);margin:6px 10px}
+
+/* ── زیرمجموعه ── */
+.cat-children{overflow:hidden;transition:max-height .2s ease}
+.cat-item.sub{padding-right:22px;font-size:11px}
+.cat-item.sub .ci{font-size:13px}
+.cat-toggle{background:none;border:none;cursor:pointer;color:var(--color-text-secondary);padding:0 2px;font-size:11px;flex-shrink:0;line-height:1;transition:.15s}
+.cat-toggle:hover{color:#fff}
+.cat-item:hover .cat-actions{opacity:1}
+.cat-actions{display:flex;gap:2px;opacity:0;transition:.15s;flex-shrink:0}
+.cat-act-btn{background:none;border:none;cursor:pointer;color:var(--color-text-secondary);padding:1px 3px;font-size:12px;border-radius:4px;transition:.1s;line-height:1}
+.cat-act-btn:hover{color:#fff;background:rgba(255,255,255,.1)}
+.cat-act-btn.red:hover{color:#E24B4A}
+
+.new-cat-row{padding:8px 10px;display:flex;gap:5px;border-top:.5px solid var(--color-border-tertiary);background:var(--color-background-secondary)}
+.new-cat-inp{flex:1;padding:5px 8px;font-size:12px;border:.5px solid var(--color-border-secondary);border-radius:7px;font-family:inherit;background:var(--color-background-primary);color:var(--color-text-primary);min-width:0}
+.new-cat-inp:focus{outline:none;border-color:#378ADD}
+.new-cat-btn{padding:5px 9px;border:.5px solid var(--color-border-secondary);border-radius:7px;cursor:pointer;background:var(--color-background-primary);color:var(--color-text-secondary);font-size:14px;transition:.12s}
+.new-cat-btn:hover{background:#378ADD;color:#fff;border-color:#378ADD}
+
+/* ── Topbar ── */
+.topbar{padding:10px 14px;border-bottom:.5px solid var(--color-border-tertiary);display:flex;align-items:center;gap:8px;flex-shrink:0;background:var(--color-background-secondary)}
+.topbar-title{font-size:13px;font-weight:600;color:var(--color-text-primary);margin-left:4px}
+.topbar-count{font-size:11px;color:var(--color-text-secondary)}
+.search-inp{flex:1;max-width:220px;padding:6px 10px;font-size:12px;border:.5px solid var(--color-border-secondary);border-radius:8px;font-family:inherit;background:var(--color-background-primary);color:var(--color-text-primary)}
+.search-inp:focus{outline:none;border-color:#378ADD}
+.spacer{flex:1}
+.icon-btn{padding:5px 8px;border:.5px solid var(--color-border-secondary);border-radius:7px;cursor:pointer;background:var(--color-background-primary);color:var(--color-text-secondary);font-size:14px;transition:.12s;display:inline-flex;align-items:center;gap:4px;white-space:nowrap;font-family:inherit;font-size:12px}
+.icon-btn:hover{background:var(--color-background-secondary);color:var(--color-text-primary)}
+.icon-btn.primary{background:#378ADD;color:#fff;border-color:#378ADD}
+.icon-btn.primary:hover{background:#185FA5}
+.icon-btn.danger{background:#E24B4A;color:#fff;border-color:#E24B4A}
+.size-grp{display:flex;gap:2px}
+.sz-btn{padding:5px 8px;border:.5px solid var(--color-border-secondary);border-radius:7px;cursor:pointer;background:var(--color-background-primary);color:var(--color-text-secondary);font-size:14px;transition:.12s}
+.sz-btn:hover{background:var(--color-background-secondary)}
+.sz-btn.on{background:#378ADD;color:#fff;border-color:#378ADD}
+
+/* ── Gallery ── */
+.gallery-wrap{flex:1;overflow-y:auto;padding:20px;background:var(--color-background-primary)}
+.gallery-grid{display:grid;gap:12px}
+.gcard{border:1px solid var(--color-border-tertiary);border-radius:18px;overflow:hidden;background:var(--color-background-secondary);cursor:grab;transition:.25s;position:relative;user-select:none}
+.gcard:hover{border-color:#00F0FF;box-shadow:0 12px 35px rgba(0,240,255,0.25);transform:translateY(-6px)}
+.gcard.dragging{opacity:.45;cursor:grabbing;transform:scale(.97)}
+.gcard.sel{border-color:#378ADD;border-width:1.5px;box-shadow:0 0 0 2px rgba(55,138,221,.2)}
+.gcard-canvas{display:block;width:100%;background:#13151C;border-bottom:.5px solid var(--color-border-tertiary)}
+.gcard-info{padding:8px 10px}
+.gcard-name{font-size:15px;font-weight:700;color:var(--color-text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gcard-meta{font-size:12px;color:var(--color-text-secondary);margin-top:6px}
+.gcard-cat{display:inline-flex;align-items:center;gap:3px;font-size:9px;padding:2px 6px;border-radius:10px;background:#1A2E44;color:#6CB1F2;margin-top:4px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gcard-sel{position:absolute;top:6px;right:6px;width:16px;height:16px;cursor:pointer;accent-color:#378ADD;z-index:2}
+.gcard-actions{position:absolute;bottom:0;left:0;right:0;display:flex;opacity:0;transition:.15s;background:rgba(22,24,34,.95);border-top:.5px solid var(--color-border-tertiary)}
+.gcard:hover .gcard-actions{opacity:1}
+.ga-btn{flex:1;padding:6px 0;font-size:10px;border:none;background:none;cursor:pointer;color:var(--color-text-secondary);font-family:inherit;display:flex;align-items:center;justify-content:center;gap:2px;transition:.12s}
+.ga-btn:hover{background:var(--color-background-primary);color:var(--color-text-primary)}
+.ga-btn.red:hover{color:#E24B4A}
+
+/* ── Upload zone ── */
+.upload-zone{border:1.5px dashed var(--color-border-secondary);border-radius:10px;padding:2.5rem;text-align:center;cursor:pointer;background:var(--color-background-secondary);transition:.2s;margin:12px 14px}
+.upload-zone:hover,.upload-zone.drag{border-color:#00F0FF;background:#11252B}
+.upload-zone i{font-size:40px;color:#00F0FF;display:block;margin-bottom:8px;text-shadow: 0 0 10px rgba(0,240,255,0.4)}
+.upload-zone p{font-size:13px;color:var(--color-text-primary);margin-bottom:4px}
+.upload-zone span{font-size:11px;color:var(--color-text-tertiary)}
+
+/* ── Empty state ── */
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:10px;color:var(--color-text-secondary);padding:2rem}
+.empty-state i{font-size:48px;color:var(--color-text-tertiary)}
+.empty-state p{font-size:13px}
+
+/* ── Progress ── */
+.progress{height:3px;background:var(--color-background-secondary);display:none;flex-shrink:0}
+.progress.show{display:block}
+.pfill{height:100%;background:#00F0FF;box-shadow: 0 0 8px #00F0FF;transition:width .3s}
+
+/* ── Toast ── */
+.toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#222530;border:1px solid #378ADD;color:#fff;border-radius:8px;padding:8px 18px;font-size:12px;z-index:999;display:none;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.4)}
+
+/* ── Modal ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:100;display:none;align-items:center;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal{background:var(--color-background-secondary);border:1px solid var(--color-border-secondary);border-radius:12px;padding:18px;width:300px;max-width:90vw;box-shadow:0 12px 32px rgba(0,0,0,.4)}
+.modal h3{font-size:14px;font-weight:600;margin-bottom:14px;color:var(--color-text-primary);display:flex;align-items:center;gap:7px}
+.modal-cats{display:flex;flex-direction:column;gap:5px;max-height:240px;overflow-y:auto;margin-bottom:14px}
+.mcat{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:8px;cursor:pointer;border:.5px solid transparent;transition:.12s;font-size:12px;color:var(--color-text-primary)}
+.mcat:hover{background:var(--color-background-primary)}
+.mcat.chosen{border-color:#378ADD;background:#1A2E44;color:#6CB1F2;font-weight:500}
+.mcat i{font-size:16px;flex-shrink:0}
+.modal-btns{display:flex;gap:7px;justify-content:flex-end}
+.mbtn{padding:7px 16px;border-radius:8px;font-size:12px;cursor:pointer;font-family:inherit;border:.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);transition:.12s}
+.mbtn:hover{background:var(--color-background-secondary)}
+.mbtn.ok{background:#378ADD;color:#fff;border-color:#378ADD}
+
+/* ── Context menu ── */
+.ctx{position:fixed;z-index:200;background:var(--color-background-secondary);border:.5px solid var(--color-border-secondary);border-radius:9px;box-shadow:0 6px 20px rgba(0,0,0,.4);min-width:150px;display:none;overflow:hidden}
+.ctx.show{display:block}
+.ctx-item{padding:8px 13px;font-size:12px;cursor:pointer;color:var(--color-text-primary);display:flex;align-items:center;gap:8px;transition:.1s}
+.ctx-item:hover{background:var(--color-background-primary)}
+.ctx-item.red{color:#E24B4A}
+
+/* ── Detail panel ── */
+.detail-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:150;display:none;align-items:center;justify-content:center}
+.detail-overlay.show{display:flex}
+.detail-panel{background:var(--color-background-secondary);border:1px solid var(--color-border-secondary);border-radius:14px;width:460px;max-width:95vw;max-height:88vh;overflow-y:auto;box-shadow:0 16px 40px rgba(0,0,0,.5)}
+.dp-head{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:.5px solid var(--color-border-tertiary)}
+.dp-head h3{flex:1;font-size:14px;font-weight:600}
+.dp-close{background:none;border:none;cursor:pointer;font-size:18px;color:var(--color-text-secondary);padding:2px}
+.dp-canvas-wrap{background:#13151C;border-bottom:.5px solid var(--color-border-tertiary)}
+.dp-canvas-wrap canvas{display:block;width:100%}
+.dp-body{padding:14px 16px}
+.dp-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.dp-label{font-size:11px;color:var(--color-text-secondary);flex-shrink:0}
+.dp-inp{padding:4px 8px;font-size:12px;border:.5px solid var(--color-border-secondary);border-radius:7px;font-family:inherit;background:var(--color-background-primary);color:var(--color-text-primary)}
+.dp-inp:focus{outline:none;border-color:#378ADD}
+.dp-meta{display:flex;gap:14px;flex-wrap:wrap;font-size:11px;color:var(--color-text-secondary);margin-bottom:12px}
+.dp-layers{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:14px}
+.dp-lr{display:flex;align-items:center;gap:6px;padding:5px 8px;background:var(--color-background-primary);border-radius:7px;font-size:11px}
+.dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.dp-acts{display:flex;gap:6px;flex-wrap:wrap}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <h1><i class="ti ti-layers-intersect"></i> CNC LAND</h1>
+      <p>مدیریت پیشرفته طرح‌های نقشه کشی</p>
+    </div>
+    <div class="cat-section">دسته‌بندی‌ها</div>
+    <div class="cat-list" id="catList"></div>
+    <div class="new-cat-row" style="flex-direction:column;gap:5px;padding:8px 10px">
+      <div style="display:flex;gap:5px">
+        <input class="new-cat-inp" id="newCatInp" placeholder="نام دسته جدید..." maxlength="24" onkeydown="if(event.key==='Enter')addCat()" style="flex:1">
+        <button class="new-cat-btn" onclick="startVoiceCat()" title="نام دسته با صدا"><i class="ti ti-microphone"></i></button>
+        <button class="new-cat-btn" onclick="addCat()" title="افزودن دسته"><i class="ti ti-plus"></i></button>
+      </div>
+      <select id="newCatParent" style="width:100%;padding:4px 7px;font-size:11px;border:.5px solid var(--color-border-secondary);border-radius:7px;background:var(--color-background-primary);color:var(--color-text-secondary);font-family:inherit">
+        <option value="">— بدون زیرمجموعه —</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <span class="topbar-title" id="topTitle">همه طرح‌ها</span>
+      <span class="topbar-count" id="topCount"></span>
+      <input class="search-inp" id="searchInp" placeholder="جستجو بر اساس نام یا لایه..." oninput="renderGallery()">
+      <div class="spacer"></div>
+      <div class="size-grp">
+        <button class="sz-btn on" id="szL" onclick="setSize('L')" title="بزرگ"><i class="ti ti-layout-grid-add"></i></button>
+        <button class="sz-btn" id="szM" onclick="setSize('M')" title="متوسط"><i class="ti ti-layout-grid"></i></button>
+        <button class="sz-btn" id="szS" onclick="setSize('S')" title="کوچک"><i class="ti ti-grid-dots"></i></button>
+      </div>
+      <button class="icon-btn" onclick="selAll(true)"><i class="ti ti-checks"></i> انتخاب همه</button>
+      <button class="icon-btn" onclick="assignCatToSel()" id="assignBtn" style="display:none"><i class="ti ti-tag"></i> دسته‌بندی</button>
+      <button class="icon-btn danger" onclick="delSelected()" id="delSelBtn" style="display:none"><i class="ti ti-trash"></i> حذف انتخاب‌شده‌ها</button>
+      <button class="icon-btn" onclick="selAll(false)" id="clearSelBtn" style="display:none"><i class="ti ti-x"></i> لغو انتخاب</button>
+      <button class="icon-btn" onclick="load()" title="بارگذاری مجدد از سرور"><i class="ti ti-refresh"></i> بروزرسانی</button>
+      <button class="icon-btn" onclick="backupAll()" title="دانلود پشتیبان کامل (DXF + اطلاعات)"><i class="ti ti-database-export"></i> پشتیبان‌گیری</button>
+      <button class="icon-btn primary" onclick="document.getElementById('fi').click()"><i class="ti ti-file-upload"></i> آپلود DXF</button>
+    </div>
+    <div class="progress" id="pb"><div class="pfill" id="pf" style="width:0%"></div></div>
+
+    <div class="gallery-wrap" id="galleryWrap"></div>
+  </div>
+</div>
+
+<input type="file" id="fi" accept=".dxf" multiple style="display:none">
+<div class="toast" id="toast"></div>
+
+<div class="modal-overlay" id="catModal">
+  <div class="modal">
+    <h3><i class="ti ti-tag"></i> انتخاب دسته‌بندی</h3>
+    <div class="modal-cats" id="modalCats"></div>
+    <div class="modal-btns">
+      <button class="mbtn" onclick="closeModal()">انصراف</button>
+      <button class="mbtn ok" onclick="confirmAssign()">تأیید</button>
+    </div>
+  </div>
+</div>
+
+<div class="detail-overlay" id="detailOverlay" onclick="if(event.target===this)closeDetail()">
+  <div class="detail-panel" id="detailPanel"></div>
+</div>
+
+<div class="ctx" id="ctx">
+  <div class="ctx-item" onclick="ctxRename()"><i class="ti ti-pencil"></i> تغییر نام</div>
+  <div class="ctx-item red" onclick="ctxDelete()"><i class="ti ti-trash"></i> حذف دسته</div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+// CONSTANTS & PALETTES (High Contrast CAD Neon)
+// ═══════════════════════════════════════════════
+const LCOLS=['#38BDF8','#4ADE80','#FB923C','#F472B6','#A78BFA','#FB7185','#34D399','#FACC15','#E2E8F0','#60A5FA'];
+
+// ── نگاشت کامل رنگ لایه‌ها بر اساس رنگ‌های دقیق نرم‌افزار CNC (از اسکرین‌شات) ──
+const LAYER_COLOR_MAP = {
+  // ── قرمز روشن (ACI 1) — ball8H ──
+  'ball8H2':            '#FF0000',
+  'ball8H2.4':          '#FF0000',
+  'ball8H1':            '#FF0000',
+  'Ball8H7':            '#FF0000',
+  // ── صورتی (ACI 6 / magenta تیره) — ball8_Drilling ──
+  'ball8_Diriling_H4':  '#FF69B4',
+  'ball8_Drilling_H4':  '#FF69B4',
+  // ── سبز تیره (ACI 3 تیره) — Navdoni_K ──
+  'Navdoni_K_H5':       '#00AA00',
+  'Navdoni_K_H12':      '#00AA00',
+  // ── سبز روشن (ACI 3) — NavdoniH9 ──
+  'NavdoniH9gerd':      '#00C800',
+  'NavdoniH9along':     '#00C800',
+  // ── فوشیا/ارغوانی (ACI 6) — 2pele ──
+  '2peleH5':            '#FF00FF',
+  '2peleH7':            '#FF00FF',
+  '2peleH10':           '#FF00FF',
+  '2pele_Kaf_H5':       '#FF00FF',
+  '2pele_Kaf_H8':       '#FF00FF',
+  // ── صورتی کم‌رنگ‌تر (ACI 211) — 3pele ──
+  '3peleH5':            '#FF6ECC',
+  '3peleH7':            '#FF6ECC',
+  // ── فیروزه‌ای (ACI 4 تیره‌تر) — ball19 ──
+  'ball19H3':           '#00B4A0',
+  // ── نارنجی (ACI 30) — ball25 ──
+  'ball25H3':           '#FF7800',
+  'ball25H5':           '#FF7800',
+  'ball25H7':           '#FF7800',
+  'ball25H8':           '#FF7800',
+  'ball25H6drilling':   '#FF7800',
+  'ball25H8(Taj)':      '#FF7800',
+  'ball25H13(Taj)':     '#FF7800',
+  'ball25_3D':          '#FF7800',
+  // ── آبی خالص (ACI 5) — kaf_25mm ──
+  'kaf_25mmH4':         '#0000FF',
+  'kaf_25mmH5':         '#0000FF',
+  'kaf_25mmH7':         '#0000FF',
+  'kaf_25mmH8':         '#0000FF',
+  // ── نارنجی (ACI 30) — V90 ──
+  'V90H4':              '#FF7800',
+  'V90v_bit':           '#FF7800',
+  'V90H2(saf)':         '#FF7800',
+  'V90H5(saf)':         '#FF7800',
+  'V90H8(saf)':         '#FF7800',
+  // ── صورتی سیر (ACI 211) — V120 ──
+  'v120H3.5':           '#FF1493',
+  'V120H3.5':           '#FF1493',
+  'V120H4':             '#FF1493',
+  'V120H4labedor':      '#FF1493',
+  'V120H6':             '#FF1493',
+  'V120H8':             '#FF1493',
+  'V120H10':            '#FF1493',
+  'V120H11':            '#FF1493',
+  'V120_Vbit':          '#FF1493',
+  'V120_EG_H6':         '#FF1493',
+  'V120_EG_H7':         '#FF1493',
+  'V120_EG_H8':         '#FF1493',
+  'V120_EG_H9':         '#FF1493',
+  'V120_EG_H11':        '#FF1493',
+  // ── آبی روشن (ACI 140) — V140 ──
+  'V140H4':             '#0096FF',
+  'V140H5':             '#0096FF',
+  'V140H6.5':           '#0096FF',
+  'V140H8':             '#0096FF',
+  'V140v_bit':          '#0096FF',
+  'V140_EG_H2':         '#0096FF',
+  'V140_EG_H4':         '#0096FF',
+  'V140_EG_H5':         '#0096FF',
+  'V140_EG_H6':         '#0096FF',
+  'V140_EG_H7':         '#0096FF',
+  'V140_EG_H8':         '#0096FF',
+  // ── نارنجی (ACI 30) — Golnoghtei ──
+  'Golnoghtei_H5.5':    '#FF7800',
+  'Golnoghtei_H8':      '#FF7800',
+  'Golnoghtei_H9':      '#FF7800',
+  // ── بنفش (ACI 218) — kaf_6mm ──
+  'kaf_6mmH3':          '#8000FF',
+  'kaf_6mmH4':          '#8000FF',
+  'kaf_6mmH5':          '#8000FF',
+  'kaf_6mmH6':          '#8000FF',
+  'kaf_6mmH7':          '#8000FF',
+  'kaf_6mmH8':          '#8000FF',
+  'kaf_6mmH10':         '#8000FF',
+  // ── آبی روشن (ACI 5) — cut6mm ──
+  'cut6mm':             '#0096FF',
+  'cut6mm_along':       '#0096FF',
+  'cut6mm_alongH2':     '#0096FF',
+  'cut6mm_alongH5':     '#0096FF',
+  'cut6mm_alongH8':     '#0096FF',
+  // ── مشکی (لایه 0) ──
+  '0':                  '#FFFFFF',
+  // ── قرمز تیره — Vector ──
+  'Vector_Layer_1':     '#CC0000',
+  'Preview_Toolpath_Layer': '#880000',
+  // ── خاکستری — sheet ──
+  'sheet':              '#888888',
+  // ── نارنجی (ACI 30) — Shiyar ──
+  'Shiyar_10mm_H2':     '#FF7800',
+  // ── خاکستری روشن — Default ──
+  'Default_Layer':      '#CCCCCC',
+};
+
+const LNAMES={
+  'cut6mm':'برش 6 میل',
+  'cut6mm_along':'برش 6 میل طولی',
+  'cut6mm_alongH2':'برش 6 میل طولی H2',
+  'cut6mm_alongH5':'برش 6 میل طولی H5',
+  'cut6mm_alongH8':'برش 6 میل طولی H8',
+  'NavdoniH9gerd':'ناودانی H9 گرد',
+  'NavdoniH9along':'ناودانی H9 طولی',
+  'Navdoni_K_H5':'ناودانی K H5',
+  'Navdoni_K_H12':'ناودانی K H12',
+  'kaf_25mmH4':'کف 25mm H4',
+  'kaf_25mmH5':'کف 25mm H5',
+  'kaf_25mmH7':'کف 25mm H7',
+  'kaf_25mmH8':'کف 25mm H8',
+  'kaf_6mmH3':'کف 6mm H3',
+  'kaf_6mmH4':'کف 6mm H4',
+  'kaf_6mmH5':'کف 6mm H5',
+  'kaf_6mmH6':'کف 6mm H6',
+  'kaf_6mmH7':'کف 6mm H7',
+  'kaf_6mmH8':'کف 6mm H8',
+  'kaf_6mmH10':'کف 6mm H10',
+  'Default_Layer':'لایه پیش‌فرض',
+  'sheet':'فریم شیت',
+  '0':'لایه صفر',
+  'Vector_Layer_1':'لایه برداری',
+  'Preview_Toolpath_Layer':'پیش‌نمایش مسیر',
+  'Shiyar_10mm_H2':'شیار 10mm H2',
+  'ball8H1':'توپ 8mm H1',
+  'ball8H2':'توپ 8mm H2',
+  'ball8H2.4':'توپ 8mm H2.4',
+  'Ball8H7':'توپ 8mm H7',
+  'ball8_Diriling_H4':'توپ 8mm حفاری H4',
+  'ball19H3':'توپ 19mm H3',
+  'ball25H3':'توپ 25mm H3',
+  'ball25H5':'توپ 25mm H5',
+  'ball25H7':'توپ 25mm H7',
+  'ball25H8':'توپ 25mm H8',
+  'ball25H6drilling':'توپ 25mm حفاری H6',
+  'ball25H8(Taj)':'توپ 25mm تاج H8',
+  'ball25H13(Taj)':'توپ 25mm تاج H13',
+  'ball25_3D':'توپ 25mm سه‌بعدی',
+  '2peleH5':'2 پله H5',
+  '2peleH7':'2 پله H7',
+  '2peleH10':'2 پله H10',
+  '2pele_Kaf_H5':'2 پله کف H5',
+  '2pele_Kaf_H8':'2 پله کف H8',
+  '3peleH5':'3 پله H5',
+  '3peleH7':'3 پله H7',
+  'V90H4':'V90 درجه H4',
+  'V90v_bit':'V90 وی‌بیت',
+  'V90H2(saf)':'V90 صاف H2',
+  'V90H5(saf)':'V90 صاف H5',
+  'V90H8(saf)':'V90 صاف H8',
+  'v120H3.5':'V120 درجه H3.5',
+  'V120H4':'V120 درجه H4',
+  'V120H4labedor':'V120 لبدور H4',
+  'V120H6':'V120 درجه H6',
+  'V120H8':'V120 درجه H8',
+  'V120H10':'V120 درجه H10',
+  'V120H11':'V120 درجه H11',
+  'V120_Vbit':'V120 وی‌بیت',
+  'V120_EG_H6':'V120 EG H6',
+  'V120_EG_H7':'V120 EG H7',
+  'V120_EG_H8':'V120 EG H8',
+  'V120_EG_H9':'V120 EG H9',
+  'V120_EG_H11':'V120 EG H11',
+  'V140H4':'V140 درجه H4',
+  'V140H5':'V140 درجه H5',
+  'V140H6.5':'V140 درجه H6.5',
+  'V140H8':'V140 درجه H8',
+  'V140v_bit':'V140 وی‌بیت',
+  'V140_EG_H2':'V140 EG H2',
+  'V140_EG_H4':'V140 EG H4',
+  'V140_EG_H5':'V140 EG H5',
+  'V140_EG_H6':'V140 EG H6',
+  'V140_EG_H7':'V140 EG H7',
+  'V140_EG_H8':'V140 EG H8',
+  'Golnoghtei_H5.5':'گلنغتی H5.5',
+  'Golnoghtei_H8':'گلنغتی H8',
+  'Golnoghtei_H9':'گلنغتی H9',
+};
+const CAT_ICONS=['ti-folder','ti-star','ti-heart','ti-bookmark','ti-tag','ti-box','ti-cube','ti-tool','ti-home','ti-leaf'];
+const SIZE_COLS={L:'repeat(3,1fr)',M:'repeat(3,1fr)',S:'repeat(4,1fr)'};
+const SIZE_H={L:320,M:260,S:160};
+
+// تابع تبدیل hex رنگ به rgb برای استفاده در rgba()
+function hexToRgb(hex){
+  const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+  return isNaN(r)?'226,232,240':`${r},${g},${b}`;
+}
+
+// ═══════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════
+let designs=[], categories=[], selIds=new Set(), activeCat='all', cardSize='L';
+let assignTargetIds=[], assignChosen='', ctxCatId='', dragDesignId='';
+
+// ═══════════════════════════════════════════════
+// STORAGE (SUPABASE — دیتابیس ابری + فضای ذخیره فایل)
+// ═══════════════════════════════════════════════
+const SB_URL = 'https://uhofpucwpikudqugodcn.supabase.co';
+const SB_KEY = 'sb_publishable_-Ru1QsLijUXolslJC9zkXw_bv73EqPB';
+const SB_BUCKET = 'dxf-files';
+
+const sbH = () => ({'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY});
+
+async function sbSelect(table, filter='', order=''){
+  const orderStr = order ? `&order=${order}` : (table!=='dxf_categories' ? '&order=created_at.desc' : '');
+  const res = await fetch(`${SB_URL}/rest/v1/${table}?${filter}${orderStr}`, {headers:{...sbH(),'Prefer':'return=representation'}});
+  if(!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+async function sbUpsert(table, row){
+  const res = await fetch(`${SB_URL}/rest/v1/${table}`, {
+    method:'POST',
+    headers:{...sbH(),'Prefer':'resolution=merge-duplicates,return=representation'},
+    body: JSON.stringify(row)
+  });
+  if(!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+async function sbDelete(table, id){
+  const res = await fetch(`${SB_URL}/rest/v1/${table}?id=eq.${encodeURIComponent(id)}`, {method:'DELETE', headers:sbH()});
+  if(!res.ok) throw new Error(await res.text());
+}
+async function sbUploadFile(path, fileContent){
+  const res = await fetch(`${SB_URL}/storage/v1/object/${SB_BUCKET}/${path}`, {
+    method:'POST',
+    headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/dxf','x-upsert':'true'},
+    body: fileContent
+  });
+  if(!res.ok) throw new Error(await res.text());
+  return `${SB_URL}/storage/v1/object/public/${SB_BUCKET}/${path}`;
+}
+async function sbDeleteFile(path){
+  try{ await fetch(`${SB_URL}/storage/v1/object/${SB_BUCKET}/${path}`, {method:'DELETE', headers:sbH()}); }catch{}
+}
+
+function setSyncStatus(state, msg){
+  let bar = document.getElementById('sbSyncBar');
+  if(!bar){
+    bar = document.createElement('div');
+    bar.id = 'sbSyncBar';
+    bar.style.cssText = 'position:fixed;top:0;left:0;right:0;height:3px;z-index:9999;transition:.3s;opacity:0;';
+    document.body.appendChild(bar);
+  }
+  if(state==='sync'){ bar.style.background='linear-gradient(90deg,#378ADD,#00F0FF)'; bar.style.opacity='1'; }
+  else if(state==='ok'){ bar.style.opacity='0'; }
+  else if(state==='err'){ bar.style.background='#E24B4A'; bar.style.opacity='1'; toast(msg||'خطا در ارتباط با سرور',4000); }
+}
+
+function designToRow(d){
+  return {
+    id: d.id, name: d.name, category: d.category || '',
+    layers: d.layers || [], layer_colors: d.layerColors || {},
+    bounds: d.bounds || {}, size: d.size || null,
+    source_file: d.sourceFile || '', storage_path: d.storagePath || null,
+    polylines: d.polylines || []
+  };
+}
+function rowToDesign(r){
+  return {
+    id: r.id, name: r.name, category: r.category || '',
+    layers: r.layers || [], layerColors: r.layer_colors || {},
+    bounds: r.bounds || {}, size: r.size || undefined,
+    sourceFile: r.source_file || '', storagePath: r.storage_path || null,
+    polylines: r.polylines || []
+  };
+}
+
+async function save(){
+  setSyncStatus('sync');
+  try{
+    for(const c of categories){
+      await sbUpsert('dxf_categories', {id:c.id, name:c.name, icon:c.icon, builtin:!!c.builtin, parent_id:c.parentId||null, collapsed:!!c.collapsed});
+    }
+    setSyncStatus('ok');
+  }catch(e){
+    console.error('خطای ذخیره دسته‌بندی:', e);
+    setSyncStatus('err','خطا در ذخیره دسته‌بندی: '+e.message);
+  }
+}
+
+async function saveDesign(d){
+  setSyncStatus('sync');
+  try{
+    await sbUpsert('dxf_designs', designToRow(d));
+    setSyncStatus('ok');
+  }catch(e){
+    console.error('خطای ذخیره طرح:', e);
+    setSyncStatus('err','خطا در ذخیره طرح: '+e.message);
+  }
+}
+
+async function deleteDesignRemote(id, storagePath){
+  setSyncStatus('sync');
+  try{
+    await sbDelete('dxf_designs', id);
+    if(storagePath) await sbDeleteFile(storagePath);
+    setSyncStatus('ok');
+  }catch(e){
+    console.error('خطای حذف طرح:', e);
+    setSyncStatus('err','خطا در حذف طرح: '+e.message);
+  }
+}
+
+async function deleteCategoryRemote(id){
+  try{ await sbDelete('dxf_categories', id); }catch(e){ console.error(e); }
+}
+
+async function load(){
+  setSyncStatus('sync');
+  try{
+    const [designRows, catRows] = await Promise.all([
+      sbSelect('dxf_designs'),
+      sbSelect('dxf_categories')
+    ]);
+    designs = designRows.map(rowToDesign);
+    categories = catRows.map(r => ({id:r.id, name:r.name, icon:r.icon, builtin:r.builtin, parentId:r.parent_id, collapsed:r.collapsed}));
+    if(!categories.length) resetCats();
+    ensureBuiltinCats();
+    setSyncStatus('ok');
+    renderAll();
+  }catch(e){
+    console.error('خطای لود از سرور:', e);
+    setSyncStatus('err','اتصال به سرور برقرار نشد: '+e.message);
+    designs = [];
+    resetCats();
+    ensureBuiltinCats();
+    renderAll();
+  }
+}
+
+function resetCats(){categories=[{id:'uncategorized',name:'بدون دسته',icon:'ti-folder-off',builtin:true}];}
+function ensureBuiltinCats(){
+  if(!categories.find(c=>c.id==='uncategorized'))
+    categories.unshift({id:'uncategorized',name:'بدون دسته',icon:'ti-folder-off',builtin:true});
+}
+
+// ═══════════════════════════════════════════════
+// UPLOAD HANDLERS
+// ═══════════════════════════════════════════════
+document.getElementById('fi').addEventListener('change',e=>handleFiles(e.target.files));
+
+function toast(m,d=2500){const t=document.getElementById('toast');t.textContent=m;t.style.display='block';clearTimeout(t._t);t._t=setTimeout(()=>t.style.display='none',d);}
+function prog(p){const b=document.getElementById('pb');b.classList.toggle('show',p>0&&p<100);document.getElementById('pf').style.width=p+'%';}
+
+async function handleFiles(files){
+  const arr=Array.from(files).filter(f=>f.name.toLowerCase().endsWith('.dxf'));
+  if(!arr.length){toast('فقط فایل صنعتی DXF قابل قبول است');return;}
+  prog(5);
+  let added=0;
+  for(const f of arr){
+    const txt=await f.text();
+    prog(30);
+    const ds=parseDXF(txt,f.name);
+    // آپلود فایل خام DXF به Storage (یک‌بار به ازای هر فایل منبع، نه هر شیت)
+    let storagePath=null;
+    try{
+      storagePath=`raw/${Date.now()}_${f.name.replace(/[^a-zA-Z0-9._-]/g,'_')}`;
+      await sbUploadFile(storagePath, txt);
+    }catch(e){
+      console.error('خطای آپلود فایل به Storage:', e);
+      toast('هشدار: فایل اصلی در فضای ابری ذخیره نشد، اما طرح‌ها ثبت می‌شوند', 4000);
+      storagePath=null;
+    }
+    ds.forEach(d=>d.storagePath=storagePath);
+    designs.push(...ds);
+    added+=ds.length;
+    prog(60);
+    // ذخیره هر طرح در دیتابیس
+    for(const d of ds){ await saveDesign(d); }
+    prog(80);
+  }
+  prog(100);
+  setTimeout(()=>prog(0),500);
+  renderAll();
+  toast(`${added} فرز کاری/طرح زنی از ${arr.length} فایل لود شد`);
+}
+
+// ═══════════════════════════════════════════════
+// DXF PARSER ENGINE
+// ═══════════════════════════════════════════════
+// ═══════════════════════════════════════════════
+// DXF ACI → RGB COLOR TABLE (256 رنگ استاندارد AutoCAD)
+// ═══════════════════════════════════════════════
+const ACI=[
+  '#000000','#FF0000','#FFFF00','#00FF00','#00FFFF','#0000FF','#FF00FF','#FFFFFF',
+  '#414141','#808080','#FF0000','#FFAAAA','#BD0000','#BD7E7E','#810000','#815656',
+  '#680000','#684545','#4F0000','#4F3535','#FF3F00','#FFBFAA','#BD2E00','#BD8D7E',
+  '#811F00','#816056','#681900','#684E45','#4F1300','#4F3B35','#FF7F00','#FFD4AA',
+  '#BD5E00','#BD9D7E','#814000','#816B56','#683400','#685645','#4F2700','#4F4235',
+  '#FFBF00','#FFEAAA','#BD8D00','#BDAD7E','#816000','#817656','#684E00','#685F45',
+  '#4F3B00','#4F4935','#FFFF00','#FFFFAA','#BDBD00','#BDBD7E','#818100','#818156',
+  '#686800','#686845','#4F4F00','#4F4F35','#BFFF00','#EAFFAA','#8DBD00','#ADBD7E',
+  '#607F00','#768156','#4E6800','#5E6845','#3B4F00','#494F35','#7FFF00','#D4FFAA',
+  '#5EBD00','#9DBD7E','#408100','#6B8156','#346800','#566845','#274F00','#424F35',
+  '#3FFF00','#BFFFAA','#2EBD00','#8DBD7E','#1F8100','#608156','#196800','#4E6845',
+  '#134F00','#3B4F35','#00FF00','#AAFFAA','#00BD00','#7EBD7E','#008100','#568156',
+  '#006800','#456845','#004F00','#354F35','#00FF3F','#AAFFBF','#00BD2E','#7EBD8D',
+  '#00811F','#568160','#006819','#45684E','#004F13','#354F3B','#00FF7F','#AAFFD4',
+  '#00BD5E','#7EBD9D','#008140','#56816B','#006834','#456856','#004F27','#354F42',
+  '#00FFBF','#AAFFEA','#00BD8D','#7EBDAD','#008160','#568176','#00684E','#45685F',
+  '#004F3B','#354F49','#00FFFF','#AAFFFF','#00BDBD','#7EBDBD','#008181','#568181',
+  '#006868','#456868','#004F4F','#354F4F','#00BFFF','#AAEAFF','#008DBD','#7EADBD',
+  '#006081','#567681','#004E68','#455E68','#003B4F','#35494F','#007FFF','#AAD4FF',
+  '#005EBD','#7E9DBD','#004081','#566B81','#003468','#455668','#00274F','#35424F',
+  '#003FFF','#AABFFF','#002EBD','#7E8DBD','#001F81','#566081','#001968','#454E68',
+  '#00134F','#353B4F','#0000FF','#AAAAFF','#0000BD','#7E7EBD','#000081','#565681',
+  '#000068','#454568','#00004F','#35354F','#3F00FF','#BFAAFF','#2E00BD','#8D7EBD',
+  '#1F0081','#605681','#190068','#4E4568','#13004F','#3B354F','#7F00FF','#D4AAFF',
+  '#5E00BD','#9D7EBD','#400081','#6B5681','#340068','#564568','#27004F','#42354F',
+  '#BF00FF','#EAAAFF','#8D00BD','#AD7EBD','#600081','#765681','#4E0068','#5F4568',
+  '#3B004F','#49354F','#FF00FF','#FFAAFF','#BD00BD','#BD7EBD','#810081','#815681',
+  '#680068','#684568','#4F004F','#4F354F','#FF00BF','#FFAAEA','#BD008D','#BD7EAD',
+  '#810060','#815676','#68004E','#68455F','#4F003B','#4F3549','#FF007F','#FFAAD4',
+  '#BD005E','#BD7E9D','#810040','#81566B','#680034','#684556','#4F0027','#4F3542',
+  '#FF003F','#FFAABF','#BD002E','#BD7E8D','#81001F','#815660','#680019','#68454E',
+  '#4F0013','#4F353B','#333333','#505050','#696969','#828282','#BEBEBE','#FFFFFF'
+];
+
+function aciToHex(aci){
+  let n=parseInt(aci);
+  if(isNaN(n)) return null;
+  n=Math.abs(n); // لایه‌های خاموش (Frozen) رنگ منفی دارند؛ مقدار رنگ هنوز معتبر است
+  if(n===0) return '#FFFFFF'; // BYLAYER placeholder
+  if(n===256) return null;    // BYLAYER
+  if(n===7) return '#FFFFFF';
+  return ACI[n]||null;
+}
+
+function parseDXF(text,fname){
+  const lines=text.split(/\r?\n/);
+  const pairs=[];
+  for(let i=0;i<lines.length-1;i+=2) pairs.push([lines[i].trim(),lines[i+1]?.trim()||'']);
+
+  // ── خواندن رنگ لایه‌ها از TABLES ──
+  const layerColors={};
+  let ti=0;
+  while(ti<pairs.length){
+    if(pairs[ti][0]==='2'&&pairs[ti][1]==='LAYER'){
+      ti++;
+      while(ti<pairs.length){
+        if(pairs[ti][0]==='0'&&pairs[ti][1]==='LAYER'){
+          ti++;
+          let lname='',laci='';
+          while(ti<pairs.length&&pairs[ti][0]!=='0'){
+            if(pairs[ti][0]==='2') lname=pairs[ti][1];
+            if(pairs[ti][0]==='62') laci=pairs[ti][1];
+            ti++;
+          }
+          if(lname){
+            const hex=aciToHex(laci);
+            if(hex) layerColors[lname]=hex;
+          }
+          continue;
+        }
+        if(pairs[ti][0]==='0'&&pairs[ti][1]==='ENDTAB') break;
+        ti++;
+      }
+    }
+    ti++;
+  }
+  const polylines=[];
+  let i=0,inEnt=false;
+  while(i<pairs.length){
+    const[c,v]=pairs[i];
+    if(c==='2'&&v==='ENTITIES'){inEnt=true;i++;continue;}
+    if(c==='0'&&v==='ENDSEC'){inEnt=false;i++;continue;}
+
+    // ── LWPOLYLINE (مختصات inline, بدون VERTEX جداگانه) ──
+    if(inEnt&&c==='0'&&v==='LWPOLYLINE'){
+      let layer='',closed=false,ecolor='';
+      const verts=[];
+      i++;
+      // خواندن header تا اولین group-10
+      while(i<pairs.length&&pairs[i][0]!=='0'){
+        if(pairs[i][0]==='8') layer=pairs[i][1];
+        if(pairs[i][0]==='70') closed=(parseInt(pairs[i][1])||0)&1;
+        if(pairs[i][0]==='62') ecolor=pairs[i][1];
+        i++;
+      }
+      // بازبینی مجدد از ابتدای اینتیتی برای جمع‌آوری x/y/bulge
+      // (بعضی فایل‌ها header و مختصات را مخلوط می‌کنند)
+      let j=pairs.findIndex((p,idx)=>idx>0&&pairs[idx-1][0]==='0'&&pairs[idx-1][1]==='LWPOLYLINE');
+      if(j<0) j=i-1;
+      // پیدا کردن محدوده این اینتیتی
+      let k=j+1;
+      while(k<pairs.length&&pairs[k][0]!=='0') k++;
+      // استخراج vertex-ها از محدوده
+      let curX=null,curY=null,curB=0;
+      for(let m=j+1;m<k;m++){
+        const[gc,gv]=pairs[m];
+        if(gc==='10'){
+          if(curX!==null&&curY!==null) verts.push({x:curX,y:curY,bulge:curB});
+          curX=parseFloat(gv);curY=null;curB=0;
+        } else if(gc==='20') curY=parseFloat(gv);
+        else if(gc==='42') curB=parseFloat(gv)||0;
+      }
+      if(curX!==null&&curY!==null) verts.push({x:curX,y:curY,bulge:curB});
+      if(verts.length>=2) polylines.push({layer,closed,color:aciToHex(ecolor),vertices:verts});
+      continue;
+    }
+
+    // ── POLYLINE/VERTEX کلاسیک ──
+    if(inEnt&&c==='0'&&v==='POLYLINE'){
+      let layer='',closed=false,ecolor='';const vertices=[];
+      i++;
+      while(i<pairs.length&&pairs[i][0]!=='0'){
+        if(pairs[i][0]==='8') layer=pairs[i][1];
+        if(pairs[i][0]==='70'){closed=(parseInt(pairs[i][1])||0)&1;}
+        if(pairs[i][0]==='62') ecolor=pairs[i][1];
+        i++;
+      }
+      while(i<pairs.length){
+        if(pairs[i][0]==='0'&&pairs[i][1]==='SEQEND'){i++;break;}
+        if(pairs[i][0]==='0'&&pairs[i][1]==='VERTEX'){
+          i++;let vx=null,vy=null,vb=0;
+          while(i<pairs.length&&pairs[i][0]!=='0'){
+            if(pairs[i][0]==='10') vx=parseFloat(pairs[i][1]);
+            if(pairs[i][0]==='20') vy=parseFloat(pairs[i][1]);
+            if(pairs[i][0]==='42') vb=parseFloat(pairs[i][1])||0;
+            i++;
+          }
+          if(vx!==null&&vy!==null) vertices.push({x:vx,y:vy,bulge:vb});
+        }else{i++;break;}
+      }
+      if(vertices.length>=2) polylines.push({layer,closed,color:aciToHex(ecolor),vertices});
+      continue;
+    }
+
+    // ── LINE اینتیتی ──
+    if(inEnt&&c==='0'&&v==='LINE'){
+      let layer='',ecolor='';let x1=null,y1=null,x2=null,y2=null;
+      i++;
+      while(i<pairs.length&&pairs[i][0]!=='0'){
+        if(pairs[i][0]==='8') layer=pairs[i][1];
+        if(pairs[i][0]==='62') ecolor=pairs[i][1];
+        if(pairs[i][0]==='10') x1=parseFloat(pairs[i][1]);
+        if(pairs[i][0]==='20') y1=parseFloat(pairs[i][1]);
+        if(pairs[i][0]==='11') x2=parseFloat(pairs[i][1]);
+        if(pairs[i][0]==='21') y2=parseFloat(pairs[i][1]);
+        i++;
+      }
+      if(x1!==null&&y1!==null&&x2!==null&&y2!==null)
+        polylines.push({layer,closed:false,color:aciToHex(ecolor),vertices:[{x:x1,y:y1,bulge:0},{x:x2,y:y2,bulge:0}]});
+      continue;
+    }
+
+    // ── ARC اینتیتی ──
+    if(inEnt&&c==='0'&&v==='ARC'){
+      let layer='',ecolor='';let cx=0,cy=0,r=0,sa=0,ea=360;
+      i++;
+      while(i<pairs.length&&pairs[i][0]!=='0'){
+        if(pairs[i][0]==='8') layer=pairs[i][1];
+        if(pairs[i][0]==='62') ecolor=pairs[i][1];
+        if(pairs[i][0]==='10') cx=parseFloat(pairs[i][1]);
+        if(pairs[i][0]==='20') cy=parseFloat(pairs[i][1]);
+        if(pairs[i][0]==='40') r=parseFloat(pairs[i][1]);
+        if(pairs[i][0]==='50') sa=parseFloat(pairs[i][1]);
+        if(pairs[i][0]==='51') ea=parseFloat(pairs[i][1]);
+        i++;
+      }
+      const verts=[];
+      const span=ea>sa?ea-sa:ea-sa+360;
+      const steps=Math.max(8,Math.round(span/5));
+      for(let s=0;s<=steps;s++){
+        const a=(sa+span*(s/steps))*Math.PI/180;
+        verts.push({x:cx+r*Math.cos(a),y:cy+r*Math.sin(a),bulge:0});
+      }
+      if(verts.length>=2) polylines.push({layer,closed:false,color:aciToHex(ecolor),vertices:verts});
+      continue;
+    }
+
+    // ── CIRCLE اینتیتی ──
+    if(inEnt&&c==='0'&&v==='CIRCLE'){
+      let layer='',ecolor='';let cx=0,cy=0,r=0;
+      i++;
+      while(i<pairs.length&&pairs[i][0]!=='0'){
+        if(pairs[i][0]==='8') layer=pairs[i][1];
+        if(pairs[i][0]==='62') ecolor=pairs[i][1];
+        if(pairs[i][0]==='10') cx=parseFloat(pairs[i][1]);
+        if(pairs[i][0]==='20') cy=parseFloat(pairs[i][1]);
+        if(pairs[i][0]==='40') r=parseFloat(pairs[i][1]);
+        i++;
+      }
+      const verts=[];
+      for(let s=0;s<=64;s++){
+        const a=(s/64)*2*Math.PI;
+        verts.push({x:cx+r*Math.cos(a),y:cy+r*Math.sin(a),bulge:0});
+      }
+      polylines.push({layer,closed:true,color:aciToHex(ecolor),vertices:verts});
+      continue;
+    }
+
+    // ── SPLINE اینتیتی ──
+    if(inEnt&&c==='0'&&v==='SPLINE'){
+      let layer='',ecolor='';const ctrlPts=[];
+      const xArr=[],yArr=[];
+      i++;
+      while(i<pairs.length&&pairs[i][0]!=='0'){
+        if(pairs[i][0]==='8') layer=pairs[i][1];
+        if(pairs[i][0]==='62') ecolor=pairs[i][1];
+        if(pairs[i][0]==='10') xArr.push(parseFloat(pairs[i][1]));
+        if(pairs[i][0]==='20') yArr.push(parseFloat(pairs[i][1]));
+        i++;
+      }
+      const n=Math.min(xArr.length,yArr.length);
+      for(let s=0;s<n;s++) ctrlPts.push({x:xArr[s],y:yArr[s],bulge:0});
+      if(ctrlPts.length>=2) polylines.push({layer,closed:false,color:aciToHex(ecolor),vertices:ctrlPts});
+      continue;
+    }
+
+    i++;
+  }
+  const sheets=polylines.filter(p=>p.layer.toLowerCase()==='sheet').map(sp=>{
+    if(sp.vertices.length<4) return null;
+    const xs=sp.vertices.map(v=>v.x),ys=sp.vertices.map(v=>v.y);
+    const b={minX:Math.min(...xs),maxX:Math.max(...xs),minY:Math.min(...ys),maxY:Math.max(...ys)};
+    return (b.maxX-b.minX)>10&&(b.maxY-b.minY)>10?b:null;
+  }).filter(Boolean);
+
+  if(!sheets.length){
+    const lm={};
+    polylines.forEach(p=>{lm[p.layer]=(lm[p.layer]||0)+p.vertices.length;});
+    return [{id:uid(),name:fname.replace(/\.dxf$/i,''),category:'',
+      layers:Object.entries(lm).map(([n,c])=>({name:n,count:c})),
+      layerColors,
+      polylines,bounds:bounds(polylines),sourceFile:fname}];
+  }
+  return sheets.map((sh,idx)=>{
+    const inside=polylines.filter(p=>{
+      if(p.layer.toLowerCase()==='sheet'||!p.vertices.length) return false;
+      const cx=p.vertices.reduce((s,v)=>s+v.x,0)/p.vertices.length;
+      const cy=p.vertices.reduce((s,v)=>s+v.y,0)/p.vertices.length;
+      return cx>=sh.minX-5&&cx<=sh.maxX+5&&cy>=sh.minY-5&&cy<=sh.maxY+5;
+    });
+    const lm={};inside.forEach(p=>{lm[p.layer]=(lm[p.layer]||0)+p.vertices.length;});
+    return {id:uid(),name:`${fname.replace(/\.dxf$/i,'')}_${idx+1}`,category:'',
+      layers:Object.entries(lm).map(([n,c])=>({name:n,count:c})),
+      layerColors,
+      polylines:inside,bounds:sh,
+      size:{w:Math.round(sh.maxX-sh.minX),h:Math.round(sh.maxY-sh.minY)},
+      sourceFile:fname};
+  });
+}
+function bounds(polys){
+  const xs=[],ys=[];
+  polys.forEach(p=>p.vertices.forEach(v=>{xs.push(v.x);ys.push(v.y);}));
+  if(!xs.length) return{minX:0,maxX:100,minY:0,maxY:100};
+  return{minX:Math.min(...xs),maxX:Math.max(...xs),minY:Math.min(...ys),maxY:Math.max(...ys)};
+}
+function uid(){return Math.random().toString(36).slice(2,9);}
+
+// ═══════════════════════════════════════════════
+// CATEGORIES CONTROLLER
+// ═══════════════════════════════════════════════
+function catCount(id){
+  // شمارش همه طرح‌های این دسته و زیرمجموعه‌هایش
+  const ids=getAllSubIds(id);ids.push(id);
+  if(id==='all') return designs.length;
+  if(id==='uncategorized') return designs.filter(d=>!d.category).length;
+  return designs.filter(d=>ids.includes(d.category)).length;
+}
+
+function getAllSubIds(id){
+  const subs=categories.filter(c=>c.parentId===id).map(c=>c.id);
+  return subs.flatMap(sid=>[sid,...getAllSubIds(sid)]);
+}
+
+function addCat(){
+  const inp=document.getElementById('newCatInp');
+  const name=inp.value.trim();
+  if(!name){toast('نام دسته را وارد کنید');return;}
+  if(categories.find(c=>c.name===name&&c.parentId===(document.getElementById('newCatParent').value||null))){
+    toast('این دسته قبلاً وجود دارد');return;
+  }
+  const icon=CAT_ICONS[categories.filter(c=>!c.builtin).length % CAT_ICONS.length];
+  const parentId=document.getElementById('newCatParent').value||null;
+  categories.push({id:'c'+uid(),name,icon,builtin:false,parentId,collapsed:false});
+  inp.value='';
+  save();renderCats();
+  toast(`دسته "${name}" افزوده شد`);
+}
+
+function renderCats(){
+  const el=document.getElementById('catList');
+  el.innerHTML='';
+  const all=mkCatItem({id:'all',name:'همه طرح‌ها',icon:'ti-layout-grid',builtin:true},designs.length);
+  el.appendChild(all);
+  el.appendChild(Object.assign(document.createElement('div'),{className:'cat-sep'}));
+  // بدون دسته
+  const unc=categories.find(c=>c.id==='uncategorized');
+  if(unc) el.appendChild(mkCatItem(unc,catCount('uncategorized')));
+  // درخت دسته‌ها (ریشه‌ها اول)
+  const roots=categories.filter(c=>!c.builtin&&!c.parentId);
+  roots.forEach(cat=>el.appendChild(mkCatTree(cat,0)));
+  // آپدیت select زیرمجموعه
+  updateParentSelect();
+}
+
+function mkCatTree(cat,depth){
+  const wrap=document.createElement('div');
+  const children=categories.filter(c=>c.parentId===cat.id);
+  const item=mkCatItem(cat,catCount(cat.id),depth,children.length>0);
+  wrap.appendChild(item);
+  if(children.length>0){
+    const childWrap=document.createElement('div');
+    childWrap.className='cat-children';
+    childWrap.style.maxHeight=cat.collapsed?'0':'1000px';
+    children.forEach(ch=>childWrap.appendChild(mkCatTree(ch,depth+1)));
+    wrap.appendChild(childWrap);
+  }
+  return wrap;
+}
+
+function mkCatItem(cat,count,depth=0,hasChildren=false){
+  const btn=document.createElement('button');
+  btn.className='cat-item'+(activeCat===cat.id?' active':'')+(depth>0?' sub':'');
+  btn.style.paddingRight=(8+depth*14)+'px';
+  btn.dataset.id=cat.id;
+
+  const toggleHtml=hasChildren
+    ?`<span class="cat-toggle" onclick="event.stopPropagation();toggleCollapse('${cat.id}')">
+        <i class="ti ${cat.collapsed?'ti-chevron-left':'ti-chevron-down'}" style="font-size:10px"></i>
+      </span>`:
+      `<span style="width:14px;flex-shrink:0"></span>`;
+
+  const actionsHtml=cat.builtin?'':
+    `<span class="cat-actions">
+      <button class="cat-act-btn" onclick="event.stopPropagation();promptRenameCat('${cat.id}')" title="تغییر نام"><i class="ti ti-pencil"></i></button>
+      <button class="cat-act-btn" onclick="event.stopPropagation();promptAddSub('${cat.id}')" title="زیرمجموعه جدید"><i class="ti ti-folder-plus"></i></button>
+      <button class="cat-act-btn red" onclick="event.stopPropagation();deleteCat('${cat.id}')" title="حذف دسته"><i class="ti ti-trash"></i></button>
+    </span>`;
+
+  btn.innerHTML=`${toggleHtml}<i class="ti ${cat.icon} ci"></i><span class="cn">${cat.name}</span><span class="cc">${count}</span>${actionsHtml}`;
+  btn.onclick=()=>{activeCat=cat.id;renderCats();renderGallery();};
+
+  // drag-drop
+  btn.addEventListener('dragover',e=>{e.preventDefault();btn.classList.add('drop-over');});
+  btn.addEventListener('dragleave',()=>btn.classList.remove('drop-over'));
+  btn.addEventListener('drop',e=>{
+    e.preventDefault();btn.classList.remove('drop-over');
+    const id=e.dataTransfer.getData('designId');
+    if(!id) return;
+    const d=designs.find(x=>x.id===id);
+    if(!d) return;
+    d.category=(cat.id==='all'||cat.id==='uncategorized')?'':cat.id;
+    saveDesign(d);renderCats();renderGallery();
+    toast(`طرح "${d.name}" به "${cat.name}" منتقل شد`);
+  });
+  return btn;
+}
+
+function toggleCollapse(id){
+  const cat=categories.find(c=>c.id===id);
+  if(cat) cat.collapsed=!cat.collapsed;
+  save();renderCats();
+}
+
+function promptRenameCat(id){
+  const cat=categories.find(c=>c.id===id);if(!cat) return;
+  const name=prompt('نام جدید دسته:',cat.name);
+  if(!name?.trim()) return;
+  cat.name=name.trim();save();renderCats();renderGallery();
+}
+
+function promptAddSub(parentId){
+  const parent=categories.find(c=>c.id===parentId);if(!parent) return;
+  const name=prompt(`نام زیرمجموعه زیر "${parent.name}":`);
+  if(!name?.trim()) return;
+  const icon=CAT_ICONS[categories.filter(c=>!c.builtin).length % CAT_ICONS.length];
+  categories.push({id:'c'+uid(),name:name.trim(),icon,builtin:false,parentId,collapsed:false});
+  parent.collapsed=false;
+  save();renderCats();
+  toast(`زیرمجموعه "${name.trim()}" اضافه شد`);
+}
+
+function deleteCat(id){
+  const cat=categories.find(c=>c.id===id);if(!cat) return;
+  const subIds=getAllSubIds(id);
+  const total=designs.filter(d=>[id,...subIds].includes(d.category)).length;
+  const msg=subIds.length
+    ?`دسته "${cat.name}" و ${subIds.length} زیرمجموعه‌اش حذف شوند؟${total?' طرح‌های آنها بدون دسته می‌شوند.':''}`
+    :`دسته "${cat.name}" حذف شود؟${total?` ${total} طرح بدون دسته می‌شوند.`:''}`;
+  if(!confirm(msg)) return;
+  const allDel=[id,...subIds];
+  const affected=designs.filter(d=>allDel.includes(d.category));
+  affected.forEach(d=>d.category='');
+  categories=categories.filter(c=>!allDel.includes(c.id));
+  if(allDel.includes(activeCat)) activeCat='all';
+  affected.forEach(d=>saveDesign(d));
+  allDel.forEach(cid=>deleteCategoryRemote(cid));
+  save();renderCats();renderGallery();
+  toast(`دسته "${cat.name}" حذف شد`);
+}
+
+function updateParentSelect(){
+  const sel=document.getElementById('newCatParent');
+  if(!sel) return;
+  const prev=sel.value;
+  sel.innerHTML='<option value="">— بدون زیرمجموعه —</option>';
+  function addOpts(cats,depth){
+    cats.forEach(c=>{
+      const opt=document.createElement('option');
+      opt.value=c.id;
+      opt.textContent='  '.repeat(depth)+(depth>0?'↳ ':'')+c.name;
+      sel.appendChild(opt);
+      addOpts(categories.filter(x=>x.parentId===c.id),depth+1);
+    });
+  }
+  addOpts(categories.filter(c=>!c.builtin&&!c.parentId),0);
+  sel.value=prev;
+}
+
+// context menu قدیمی — نگه‌داری برای سازگاری
+function showCtx(e,catId){ctxCatId=catId;}
+function ctxRename(){promptRenameCat(ctxCatId);}
+function ctxDelete(){deleteCat(ctxCatId);}
+
+// ═══════════════════════════════════════════════
+// GALLERY DISPLAY VIEW
+// ═══════════════════════════════════════════════
+function setSize(sz){
+  cardSize=sz;
+  ['L','M','S'].forEach(s=>document.getElementById('sz'+s).classList.toggle('on',s===sz));
+  renderGallery();
+}
+
+function getVisible(){
+  const q=document.getElementById('searchInp').value.toLowerCase();
+  // اگه یه دسته انتخاب شده، زیرمجموعه‌هاش رو هم نشون بده
+  const activeCatIds=activeCat==='all'?null:
+    activeCat==='uncategorized'?'uncategorized':
+    [activeCat,...getAllSubIds(activeCat)];
+  return designs.filter(d=>{
+    const mq=!q||d.name.toLowerCase().includes(q)||d.layers.some(l=>l.name.toLowerCase().includes(q));
+    let mc;
+    if(!activeCatIds) mc=true;
+    else if(activeCatIds==='uncategorized') mc=!d.category;
+    else mc=activeCatIds.includes(d.category);
+    return mq&&mc;
+  });
+}
+
+function renderGallery(){
+  const vis=getVisible();
+  const wrap=document.getElementById('galleryWrap');
+  const cat=activeCat==='all'?'همه طرح‌ها':activeCat==='uncategorized'?'بدون دسته':(categories.find(c=>c.id===activeCat)?.name||'');
+  document.getElementById('topTitle').textContent=cat;
+  document.getElementById('topCount').textContent=vis.length?`${vis.length} طرح نقشه`:'';
+
+  if(!designs.length){
+    wrap.innerHTML='';
+    wrap.appendChild(mkUploadZone());
+    return;
+  }
+  if(!vis.length){
+    wrap.innerHTML='<div class="empty-state"><i class="ti ti-search"></i><p>طرحی پیدا نشد!</p></div>';
+    return;
+  }
+
+  const grid=document.createElement('div');
+  grid.className='gallery-grid';
+  grid.style.gridTemplateColumns=SIZE_COLS[cardSize];
+  vis.forEach(d=>grid.appendChild(mkCard(d)));
+  wrap.innerHTML='';
+  wrap.appendChild(grid);
+  vis.forEach(d=>{
+    const cv=document.getElementById('gc_'+d.id);
+    if(cv) setTimeout(()=>drawCanvas(cv,d,SIZE_H[cardSize]),15);
+  });
+  updateSelUI();
+}
+
+function mkCard(d){
+  const cat=categories.find(c=>c.id===d.category);
+  const isSel=selIds.has(d.id);
+  const div=document.createElement('div');
+  div.className='gcard'+(isSel?' sel':'');
+  div.dataset.id=d.id;
+  const h=SIZE_H[cardSize];
+  div.innerHTML=`
+    <input class="gcard-sel" type="checkbox" ${isSel?'checked':''} title="انتخاب"
+      onclick="event.stopPropagation();toggleSel('${d.id}',this)">
+    <canvas class="gcard-canvas" id="gc_${d.id}" height="${h}" style="height:${h}px"></canvas>
+    <div class="gcard-info">
+      <div class="gcard-name" title="${d.name}">${d.name}</div>
+      <div class="gcard-meta">${d.size?d.size.w+'×'+d.size.h+' mm':''} · ${d.polylines.length} خط برش</div>
+      ${cat?`<div class="gcard-cat"><i class="ti ${cat.icon}" style="font-size:9px"></i> ${cat.name}</div>`:''}
+    </div>
+    <div class="gcard-actions">
+      <button class="ga-btn" onclick="event.stopPropagation();openModal(['${d.id}'])" title="دسته‌بندی"><i class="ti ti-tag"></i></button>
+      <button class="ga-btn" onclick="event.stopPropagation();openDetail('${d.id}')" title="جزییات وکتور"><i class="ti ti-eye"></i></button>
+      <button class="ga-btn" onclick="event.stopPropagation();exportOne('${d.id}')" title="خروجی تک کاره DXF"><i class="ti ti-download"></i></button>
+      <button class="ga-btn red" onclick="event.stopPropagation();delDesign('${d.id}')" title="حذف نقشه"><i class="ti ti-trash"></i></button>
+    </div>`;
+  
+  div.draggable=true;
+  div.addEventListener('dragstart',e=>{
+    dragDesignId=d.id;div.classList.add('dragging');
+    e.dataTransfer.setData('designId',d.id);
+    e.dataTransfer.effectAllowed='move';
+  });
+  div.addEventListener('dragend',()=>{div.classList.remove('dragging');dragDesignId='';});
+  div.addEventListener('click',()=>openDetail(d.id));
+  return div;
+}
+
+// ═══════════════════════════════════════════════
+// NEW HIGH-TECH CAD VIEWPORT RENDERER ENGINE
+// ═══════════════════════════════════════════════
+function drawCanvas(canvas,d,h){
+  const dpr=window.devicePixelRatio||1;
+  const W=canvas.offsetWidth||canvas.parentElement?.offsetWidth||200;
+  h=h||canvas.height;
+  // رزولوشن واقعی با DPR برای نمایشگرهای Retina/موبایل
+  canvas.width=Math.round(W*dpr);
+  canvas.height=Math.round(h*dpr);
+  canvas.style.width=W+'px';
+  canvas.style.height=h+'px';
+  const ctx=canvas.getContext('2d');
+  ctx.scale(dpr,dpr);
+
+  // شبیه‌ساز نمایشگر تاریک صنعتی ماشین‌آلات فرزکاری
+  ctx.fillStyle='#12141C';
+  ctx.fillRect(0,0,W,h);
+  
+  // رندر گرید خطوط میلی‌متری پس‌زمینه (Grid lines)
+  ctx.strokeStyle='rgba(255,255,255,0.04)';
+  ctx.lineWidth=0.5;
+  const step = 20;
+  for(let x=0; x<W; x+=step){
+    ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,h); ctx.stroke();
+  }
+  for(let y=0; y<h; y+=step){
+    ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke();
+  }
+
+  const b=d.bounds;
+  const bw=(b.maxX-b.minX)||1,bh=(b.maxY-b.minY)||1;
+  const pad=12,sc=Math.min((W-pad*2)/bw,(h-pad*2)/bh);
+  const ox=(W-bw*sc)/2-b.minX*sc,oy=(h-bh*sc)/2-b.minY*sc;
+  const tx=x=>x*sc+ox,ty=y=>h-(y*sc+oy);
+  
+  // کادر ابعاد شیت (Bounding Box) با رنگ آبی فیروزه‌ای مات نرم‌افزاری
+  ctx.strokeStyle='rgba(55,138,221,0.35)';
+  ctx.lineWidth=0.7;
+  ctx.setLineDash([4,4]);
+  ctx.strokeRect(tx(b.minX),ty(b.maxY),bw*sc,bh*sc);
+  ctx.setLineDash([]);
+  
+  // اولویت رنگ: نگاشت نام لایه (دقیق‌ترین در فایل‌های این نرم‌افزار CNC) > رنگ لایه از TABLES > رنگ entity > پالت پشتیبان
+  // نکته: نرم‌افزار CNC این پروژه معمولاً رنگ entity (۶۲) را برابر «۱-قرمز» صادر می‌کند صرف‌نظر از لایه،
+  // و بخش TABLES هم اغلب «۷-سفید» برای همه لایه‌ها دارد. تنها سیگنال واقعی، نام خود لایه است.
+  const layerColors=d.layerColors||{};
+  const fallbackPalette=['#38BDF8','#4ADE80','#FB923C','#F472B6','#A78BFA','#FB7185','#34D399','#FACC15','#E2E8F0','#60A5FA'];
+  const fallbackMap={};
+  d.layers.forEach((l,idx)=>{fallbackMap[l.name]=fallbackPalette[idx%fallbackPalette.length];});
+
+  function getColor(p){
+    // ۱. نگاشت ثابت اسامی شناخته‌شده (case-sensitive) — معتبرترین منبع برای این نوع فایل‌ها
+    if(LAYER_COLOR_MAP[p.layer]) return LAYER_COLOR_MAP[p.layer];
+    // ۲. تشخیص هوشمند بر اساس پیشوند نام لایه
+    const ln=p.layer.toLowerCase();
+    if(ln.startsWith('ball8'))         return '#FF0000';
+    if(ln.startsWith('ball19'))        return '#00B4A0';
+    if(ln.startsWith('ball25'))        return '#FF7800';
+    if(ln.startsWith('2pele'))         return '#FF00FF';
+    if(ln.startsWith('3pele'))         return '#FF6ECC';
+    if(ln.startsWith('navdoni_k'))     return '#00AA00';
+    if(ln.startsWith('navdonih9'))     return '#00C800';
+    if(ln.startsWith('kaf_25mm'))      return '#0000FF';
+    if(ln.startsWith('kaf_6mm'))       return '#8000FF';
+    if(ln.startsWith('v90'))           return '#FF7800';
+    if(ln.startsWith('v120'))          return '#FF1493';
+    if(ln.startsWith('v140'))          return '#0096FF';
+    if(ln.startsWith('golnoghtei'))    return '#FF7800';
+    if(ln.startsWith('cut6mm'))        return '#0096FF';
+    if(ln.startsWith('shiyar'))        return '#FF7800';
+    if(ln.startsWith('vector'))        return '#CC0000';
+    if(ln==='sheet')                   return '#888888';
+    if(ln==='0')                       return '#FFFFFF';
+    // ۳. رنگ لایه از بخش TABLES فایل DXF (فقط اگر معنادار و غیر-سفید/سیاه باشد)
+    if(layerColors[p.layer]&&layerColors[p.layer]!=='#FFFFFF'&&layerColors[p.layer]!=='#000000') return layerColors[p.layer];
+    // ۴. رنگ مستقیم entity (group code 62) — کمترین اولویت چون در این فایل‌ها غیرقابل اعتماد است
+    if(p.color&&p.color!=='#FFFFFF'&&p.color!=='#000000') return p.color;
+    // ۵. پالت پشتیبان برای لایه‌های کاملاً ناشناخته
+    return fallbackMap[p.layer]||'#E2E8F0';
+  }
+  
+  ctx.lineJoin='round';
+  ctx.lineCap='round';
+
+  // ── Adaptive rendering بر اساس تعداد polyline ──
+  const total=d.polylines.length;
+  // ضخامت خط: کمتر از 30 → 1.2px  |  30-150 → 0.7px  |  بیشتر → 0.4px
+  const lw = total<30 ? 1.2 : total<150 ? 0.7 : 0.4;
+  // شفافیت: هرچه بیشتر، کمتر روی هم بزنن
+  const alpha = total<30 ? 1 : total<100 ? 0.85 : total<300 ? 0.65 : 0.45;
+  // حداقل سایز pixel یه polyline برای رسم (جلوگیری از نویز)
+  const minPxSize = total>200 ? 2 : 1;
+
+  // تابع کمکی: بزرگ‌ترین بُعد یک poly به pixel
+  function polyPixelSize(p){
+    let mnx=Infinity,mxx=-Infinity,mny=Infinity,mxy=-Infinity;
+    p.vertices.forEach(v=>{
+      if(v.x<mnx)mnx=v.x;if(v.x>mxx)mxx=v.x;
+      if(v.y<mny)mny=v.y;if(v.y>mxy)mxy=v.y;
+    });
+    return Math.max((mxx-mnx)*sc,(mxy-mny)*sc);
+  }
+
+  // تابع رسم یک polyline با قوس‌های bulge
+  function drawPoly(p){
+    if(p.vertices.length<2) return;
+    if(polyPixelSize(p)<minPxSize) return; // حذف نویز ریز
+    const col=getColor(p);
+    // رنگ با alpha
+    const rgb=hexToRgb(col);
+    ctx.strokeStyle=`rgba(${rgb},${alpha})`;
+    ctx.lineWidth=lw;
+    ctx.beginPath();
+    ctx.moveTo(tx(p.vertices[0].x),ty(p.vertices[0].y));
+    for(let vi=0;vi<p.vertices.length-1;vi++){
+      const v0=p.vertices[vi],v1=p.vertices[vi+1];
+      const bulge=v0.bulge||0;
+      if(Math.abs(bulge)<1e-9){
+        ctx.lineTo(tx(v1.x),ty(v1.y));
+      } else {
+        const x1s=v0.x,y1s=v0.y,x2s=v1.x,y2s=v1.y;
+        const dx=x2s-x1s,dy=y2s-y1s;
+        const d2=Math.sqrt(dx*dx+dy*dy);
+        if(d2<1e-9){ctx.lineTo(tx(v1.x),ty(v1.y));continue;}
+        const theta=4*Math.atan(Math.abs(bulge));
+        const r=d2/(2*Math.sin(theta/2));
+        const sign=bulge>0?1:-1;
+        const mx2=(x1s+x2s)/2,my2=(y1s+y2s)/2;
+        const perpLen=Math.sqrt(Math.max(0,r*r-(d2/2)*(d2/2)));
+        const cxArc=mx2+(-dy/d2*perpLen*sign);
+        const cyArc=my2+(dx/d2*perpLen*sign);
+        const saC=-Math.atan2(y1s-cyArc,x1s-cxArc);
+        const eaC=-Math.atan2(y2s-cyArc,x2s-cxArc);
+        ctx.arc(tx(cxArc),ty(cyArc),r*sc,saC,eaC,bulge>0);
+      }
+    }
+    if(p.closed){
+      const vL=p.vertices[p.vertices.length-1],v0=p.vertices[0];
+      const bulge=vL.bulge||0;
+      if(Math.abs(bulge)<1e-9){ctx.closePath();}
+      else{
+        const x1s=vL.x,y1s=vL.y,x2s=v0.x,y2s=v0.y;
+        const dx=x2s-x1s,dy=y2s-y1s;
+        const d2=Math.sqrt(dx*dx+dy*dy);
+        if(d2>1e-9){
+          const theta=4*Math.atan(Math.abs(bulge));
+          const r=d2/(2*Math.sin(theta/2));
+          const sign=bulge>0?1:-1;
+          const mx2=(x1s+x2s)/2,my2=(y1s+y2s)/2;
+          const perpLen=Math.sqrt(Math.max(0,r*r-(d2/2)*(d2/2)));
+          const cxArc=mx2+(-dy/d2*perpLen*sign);
+          const cyArc=my2+(dx/d2*perpLen*sign);
+          ctx.arc(tx(cxArc),ty(cyArc),r*sc,
+            -Math.atan2(y1s-cyArc,x1s-cxArc),
+            -Math.atan2(y2s-cyArc,x2s-cxArc),bulge>0);
+        }
+        ctx.closePath();
+      }
+    }
+    ctx.stroke();
+  }
+
+  // رسم لایه به لایه (closed اول، بعد open) برای خوانایی بیشتر
+  d.polylines.filter(p=>p.closed).forEach(drawPoly);
+  d.polylines.filter(p=>!p.closed).forEach(drawPoly);
+  
+  // ریست گلوبال افکت سایه برای بهینه‌سازی پرفورمنس پردازش لایه‌ها
+  ctx.shadowBlur=0;
+}
+
+// ═══════════════════════════════════════════════
+// DETAILS VIEW & LAYERS EXTENSION
+// ═══════════════════════════════════════════════
+function openDetail(id){
+  const d=designs.find(x=>x.id===id);if(!d) return;
+  const cat=categories.find(c=>c.id===d.category);
+  const W=d.size?d.size.w:'—',H=d.size?d.size.h:'—';
+  const tverts=d.polylines.reduce((s,p)=>s+p.vertices.length,0);
+  const panel=document.getElementById('detailPanel');
+  panel.innerHTML=`
+    <div class="dp-head">
+      <h3>${d.name}</h3>
+      <button class="dp-close" onclick="closeDetail()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="dp-canvas-wrap"><canvas id="dpc_${d.id}" height="220" style="height:220px"></canvas></div>
+    <div class="dp-body">
+      <div class="dp-row">
+        <span class="dp-label">نام کارگاهی طرح:</span>
+        <input class="dp-inp" style="flex:1" id="dpNameInp_${d.id}" value="${d.name}" onchange="renameD('${d.id}',this.value)">
+        <button class="icon-btn" id="voiceBtn_${d.id}" onclick="startVoice('${d.id}')" title="تغییر نام با صدا" style="padding:5px 8px;flex-shrink:0">
+          <i class="ti ti-microphone"></i>
+        </button>
+      </div>
+      <div class="dp-row">
+        <span class="dp-label">موقعیت قفسه/دسته:</span>
+        <button class="icon-btn" onclick="openModal(['${d.id}'])"><i class="ti ${cat?cat.icon:'ti-folder-off'}"></i> ${cat?cat.name:'بدون دسته'}</button>
+      </div>
+      <div class="dp-meta">
+        <span><i class="ti ti-ruler-2"></i> کارگیر قطعه: ${W} × ${H} میلی‌متر</span>
+        <span><i class="ti ti-vector"></i> خطوط لوپ: ${d.polylines.length} Polyline</span>
+        <span><i class="ti ti-point"></i> نقاط برداری: ${tverts} Node</span>
+        <span><i class="ti ti-file"></i> فایل مبدا: ${d.sourceFile}</span>
+      </div>
+      <div class="dp-layers">
+        ${d.layers.map((l,i)=>{
+          const realCol=(d.layerColors&&d.layerColors[l.name])||LAYER_COLOR_MAP[l.name]||LCOLS[i%LCOLS.length];
+          return `<div class="dp-lr"><div class="dot" style="background:${realCol}"></div><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${l.name}">${LNAMES[l.name]||l.name}</span><span style="color:var(--color-text-secondary);font-size:10px">${l.count} گره</span></div>`;
+        }).join('')}
+      </div>
+      <div class="dp-acts">
+        <button class="icon-btn primary" onclick="exportOne('${d.id}')"><i class="ti ti-download"></i> خروجی DXF اصلاح‌شده</button>
+        <button class="icon-btn danger" onclick="delDesign('${d.id}');closeDetail()"><i class="ti ti-trash"></i> حذف از آرشیو</button>
+      </div>
+    </div>`;
+  document.getElementById('detailOverlay').classList.add('show');
+  setTimeout(()=>{
+    const cv=document.getElementById('dpc_'+d.id);
+    if(cv) drawCanvas(cv,d,220);
+  },40);
+}
+function closeDetail(){document.getElementById('detailOverlay').classList.remove('show');}
+
+// ═══════════════════════════════════════════════
+// UI SELECTION ACTIONS
+// ═══════════════════════════════════════════════
+function toggleSel(id,cb){
+  if(cb.checked) selIds.add(id); else selIds.delete(id);
+  document.querySelectorAll(`.gcard[data-id="${id}"]`).forEach(c=>c.classList.toggle('sel',cb.checked));
+  updateSelUI();
+}
+function selAll(v){
+  getVisible().forEach(d=>{if(v) selIds.add(d.id); else selIds.delete(d.id);});
+  renderGallery();
+}
+function updateSelUI(){
+  const n=selIds.size;
+  const assignBtn=document.getElementById('assignBtn');
+  const delSelBtn=document.getElementById('delSelBtn');
+  const clearSelBtn=document.getElementById('clearSelBtn');
+  assignBtn.style.display=n?'inline-flex':'none';
+  delSelBtn.style.display=n?'inline-flex':'none';
+  clearSelBtn.style.display=n?'inline-flex':'none';
+  if(n){
+    assignBtn.innerHTML=`<i class="ti ti-tag"></i> دسته‌بندی (${n})`;
+    delSelBtn.innerHTML=`<i class="ti ti-trash"></i> حذف (${n})`;
+  }
+}
+function assignCatToSel(){
+  if(!selIds.size){toast('ابتدا طرح‌هایی را انتخاب کنید');return;}
+  openModal([...selIds]);
+}
+function delSelected(){
+  const n=selIds.size;
+  if(!n) return;
+  if(!confirm(`${n} طرح انتخاب‌شده حذف شوند؟`)) return;
+  const toDelete=designs.filter(d=>selIds.has(d.id));
+  designs=designs.filter(d=>!selIds.has(d.id));
+  selIds.clear();
+  renderCats();renderGallery();
+  updateSelUI();
+  toast(`${n} طرح حذف شد`);
+  toDelete.forEach(d=>deleteDesignRemote(d.id, d.storagePath));
+}
+
+// ═══════════════════════════════════════════════
+// MODAL MANAGEMENT
+// ═══════════════════════════════════════════════
+function openModal(ids){
+  assignTargetIds=ids;assignChosen='__NONE__';
+  const list=document.getElementById('modalCats');
+  list.innerHTML='';
+
+  function mkMcat(icon,name,val,depth=0){
+    const div=document.createElement('div');
+    div.className='mcat';
+    div.style.paddingRight=(10+depth*16)+'px';
+    div.innerHTML=`<i class="ti ${icon}"></i> ${name}`;
+    div.onclick=()=>{
+      assignChosen=val;
+      list.querySelectorAll('.mcat').forEach(x=>x.classList.remove('chosen'));
+      div.classList.add('chosen');
+    };
+    list.appendChild(div);
+  }
+
+  function addTree(cats,depth){
+    cats.forEach(cat=>{
+      mkMcat(cat.icon,cat.name,cat.id,depth);
+      const children=categories.filter(c=>c.parentId===cat.id);
+      if(children.length) addTree(children,depth+1);
+    });
+  }
+
+  mkMcat('ti-folder-off','بدون دسته','',0);
+  addTree(categories.filter(c=>!c.builtin&&!c.parentId),0);
+  document.getElementById('catModal').classList.add('show');
+}
+function closeModal(){document.getElementById('catModal').classList.remove('show');}
+function confirmAssign(){
+  if(assignChosen==='__NONE__'){toast('یک دسته انتخاب کنید');return;}
+  const affected=[];
+  assignTargetIds.forEach(id=>{const d=designs.find(x=>x.id===id);if(d){d.category=assignChosen;affected.push(d);}});
+  selIds.clear();
+  closeModal();closeDetail();
+  renderCats();renderGallery();
+  toast(`${assignTargetIds.length} فایل با موفقیت دسته‌بندی شد`);
+  affected.forEach(d=>saveDesign(d));
+}
+
+function renameD(id,name){
+  const d=designs.find(x=>x.id===id);
+  if(d){d.name=name.trim()||d.name;saveDesign(d);renderGallery();}
+}
+function delDesign(id){
+  if(!confirm('این نقشه از گالری حذف شود؟')) return;
+  const d=designs.find(x=>x.id===id);
+  designs=designs.filter(x=>x.id!==id);selIds.delete(id);
+  renderCats();renderGallery();
+  if(d) deleteDesignRemote(d.id, d.storagePath);
+}
+
+// ═══════════════════════════════════════════════
+// EXPORT SYSTEM DXF GENERATOR
+// ═══════════════════════════════════════════════
+function buildDXF(ds){
+  const layers=new Set(ds.flatMap(d=>d.layers.map(l=>l.name)));layers.add('sheet');
+  let f='0\nSECTION\n2\nHEADER\n9\n$ACADVER\n1\nAC1009\n0\nENDSEC\n';
+  f+='0\nSECTION\n2\nTABLES\n0\nTABLE\n2\nLAYER\n70\n'+layers.size+'\n';
+  layers.forEach(l=>{f+=`0\nLAYER\n2\n${l}\n70\n0\n62\n7\n6\nCONTINUOUS\n`;});
+  f+='0\nENDTAB\n0\nENDSEC\n0\nSECTION\n2\nENTITIES\n';
+  ds.forEach(d=>{
+    const b=d.bounds;
+    [[b.minX,b.minY],[b.minX,b.maxY],[b.maxX,b.maxY],[b.maxX,b.minY],[b.minX,b.minY]].forEach(([x,y],i)=>{
+      if(i===0){f+='0\nPOLYLINE\n8\nsheet\n66\n1\n70\n1\n';}
+      f+=`0\nVERTEX\n8\n0\n10\n${x.toFixed(5)}\n20\n${y.toFixed(5)}\n30\n0.0\n`;
+    });
+    f+='0\nSEQEND\n';
+    d.polylines.forEach(p=>{
+      f+=`0\nPOLYLINE\n8\n${p.layer}\n66\n1\n70\n${p.closed?1:0}\n`;
+      p.vertices.forEach(v=>{
+        f+=`0\nVERTEX\n8\n0\n10\n${v.x.toFixed(5)}\n20\n${v.y.toFixed(5)}\n30\n0.0\n`;
+        if(v.bulge) f+=`42\n${v.bulge}\n`;
+      });
+      f+='0\nSEQEND\n';
+    });
+  });
+  f+='0\nENDSEC\n0\nEOF\n';return f;
+}
+function dlDXF(content,name){
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([content],{type:'application/dxf'}));
+  a.download=name;a.click();
+}
+function exportOne(id){
+  const d=designs.find(x=>x.id===id);if(!d) return;
+  dlDXF(buildDXF([d]),d.name+'.dxf');toast(d.name+'.dxf دانلود شد');
+}
+
+// ═══════════════════════════════════════════════
+// UPLOAD ZONE DROP-AREA
+// ═══════════════════════════════════════════════
+// ═══════════════════════════════════════════════
+// BACKUP SYSTEM (دانلود پشتیبان کامل)
+// ═══════════════════════════════════════════════
+async function backupAll(){
+  if(!designs.length){toast('هیچ طرحی برای پشتیبان‌گیری وجود ندارد');return;}
+  toast('در حال تهیه پشتیبان... این ممکن است کمی طول بکشد',5000);
+  try{
+    const JSZipMod = await loadJSZip();
+    const zip = new JSZipMod();
+
+    // ۱. فایل JSON شامل metadata کامل (دسته‌ها + طرح‌ها بدون هندسه سنگین تکراری در صورت وجود فایل خام)
+    const metaData = {
+      exportedAt: new Date().toISOString(),
+      categories: categories,
+      designs: designs.map(d=>({...d}))
+    };
+    zip.file('gallery_data.json', JSON.stringify(metaData, null, 2));
+
+    // ۲. فایل‌های DXF خام از Storage (یکتا بر اساس storagePath، چون چند شیت ممکنه یک فایل مشترک داشته باشن)
+    const uniquePaths = [...new Set(designs.map(d=>d.storagePath).filter(Boolean))];
+    let done=0;
+    for(const path of uniquePaths){
+      try{
+        const res = await fetch(`${SB_URL}/storage/v1/object/public/${SB_BUCKET}/${path}`);
+        if(res.ok){
+          const blob = await res.blob();
+          const filename = path.split('/').pop();
+          zip.file('dxf_files/'+filename, blob);
+        }
+      }catch(e){ console.error('خطا در دریافت فایل پشتیبان:', path, e); }
+      done++;
+      prog(Math.round(10+ (done/uniquePaths.length)*80));
+    }
+
+    const content = await zip.generateAsync({type:'blob'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(content);
+    a.download=`cnc_land_dxf_backup_${new Date().toISOString().slice(0,10)}.zip`;
+    a.click();
+    prog(0);
+    toast(`پشتیبان شامل ${designs.length} طرح و ${uniquePaths.length} فایل DXF دانلود شد ✓`);
+  }catch(e){
+    console.error('خطای پشتیبان‌گیری:', e);
+    toast('خطا در پشتیبان‌گیری: '+e.message, 5000);
+  }
+}
+
+// بارگذاری کتابخانه JSZip فقط در صورت نیاز (lazy load)
+let _jszipPromise=null;
+function loadJSZip(){
+  if(window.JSZip) return Promise.resolve(window.JSZip);
+  if(_jszipPromise) return _jszipPromise;
+  _jszipPromise = new Promise((resolve,reject)=>{
+    const s=document.createElement('script');
+    s.src='https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+    s.onload=()=>resolve(window.JSZip);
+    s.onerror=()=>reject(new Error('بارگذاری کتابخانه فشرده‌سازی ناموفق بود'));
+    document.head.appendChild(s);
+  });
+  return _jszipPromise;
+}
+
+function mkUploadZone(){
+  const div=document.createElement('div');
+  div.className='upload-zone';
+  div.innerHTML=`<i class="ti ti-file-upload"></i><p>فایل مگا طرح DXF را اینجا رها کنید یا کلیک کنید</p><span>پشتیبانی کامل: DXF ASCII با ساختارهای برداری POLYLINE/VERTEX</span>`;
+  div.addEventListener('click',()=>document.getElementById('fi').click());
+  div.addEventListener('dragover',e=>{e.preventDefault();div.classList.add('drag');});
+  div.addEventListener('dragleave',()=>div.classList.remove('drag'));
+  div.addEventListener('drop',e=>{e.preventDefault();div.classList.remove('drag');handleFiles(e.dataTransfer.files);});
+  return div;
+}
+document.getElementById('galleryWrap').addEventListener('dragover',e=>{
+  if(e.dataTransfer.types.includes('Files')) e.preventDefault();
+});
+document.getElementById('galleryWrap').addEventListener('drop',e=>{
+  if(e.dataTransfer.files.length){e.preventDefault();handleFiles(e.dataTransfer.files);}
+});
+
+function renderAll(){renderCats();renderGallery();}
+
+
+// ═══════════════════════════════════════════════
+// VOICE INPUT ENGINE (Web Speech API)
+// ═══════════════════════════════════════════════
+let _voiceRec=null;
+function _getSR(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){toast('مرورگر شما از ورودی صوتی پشتیبانی نمی‌کند');return null;}
+  const r=new SR();
+  r.lang='fa-IR';
+  r.interimResults=false;
+  r.maxAlternatives=1;
+  return r;
+}
+
+function startVoice(designId){
+  const btn=document.getElementById('voiceBtn_'+designId);
+  const inp=document.getElementById('dpNameInp_'+designId);
+  if(!btn||!inp) return;
+  if(_voiceRec){_voiceRec.abort();_voiceRec=null;_resetVoiceBtn(btn);return;}
+  const r=_getSR();if(!r) return;
+  _voiceRec=r;
+  btn.innerHTML='<i class="ti ti-microphone" style="color:#E24B4A;animation:pulse 0.8s infinite"></i>';
+  btn.title='در حال ضبط... کلیک برای لغو';
+  toast('🎤 در حال گوش دادن... نام طرح را بگویید',3000);
+  r.onresult=e=>{
+    const t=e.results[0][0].transcript.trim();
+    inp.value=t;
+    renameD(designId,t);
+    toast('✅ نام طرح: «'+t+'» ذخیره شد');
+  };
+  r.onerror=e=>{
+    toast('خطای میکروفون: '+e.error);
+  };
+  r.onend=()=>{
+    _voiceRec=null;
+    _resetVoiceBtn(btn);
+  };
+  r.start();
+}
+
+function startVoiceCat(){
+  const inp=document.getElementById('newCatInp');
+  const btn=document.querySelector('.new-cat-row .new-cat-btn');
+  if(!inp) return;
+  if(_voiceRec){_voiceRec.abort();_voiceRec=null;inp.placeholder='دسته جدید...';return;}
+  const r=_getSR();if(!r) return;
+  _voiceRec=r;
+  inp.placeholder='🎤 در حال گوش دادن...';
+  toast('🎤 نام دسته را بگویید',3000);
+  r.onresult=e=>{
+    const t=e.results[0][0].transcript.trim();
+    inp.value=t;
+    toast('✅ نام دسته: «'+t+'» — برای ذخیره + بزنید');
+  };
+  r.onerror=e=>toast('خطای میکروفون: '+e.error);
+  r.onend=()=>{_voiceRec=null;inp.placeholder='دسته جدید...';};
+  r.start();
+}
+
+function _resetVoiceBtn(btn){
+  if(btn){btn.innerHTML='<i class="ti ti-microphone"></i>';btn.title='تغییر نام با صدا';}
+}
+
+// CSS pulse animation برای نشانگر ضبط صدا
+(()=>{
+  const s=document.createElement('style');
+  s.textContent=`@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+  .voice-recording{border-color:#E24B4A!important;box-shadow:0 0 0 2px rgba(226,75,74,0.3)!important;}`;
+  document.head.appendChild(s);
+})();
+
+// ═══════════════════════════════════════════════
+// PWA SERVICE WORKER
+// ═══════════════════════════════════════════════
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('sw.js').then(()=>console.log('SW registered')).catch(()=>{});
+  });
+}
+
+// ═══════════════════════════════════════════════
+// AUTOMATIC ENGINE INITIALIZATION
+// ═══════════════════════════════════════════════
+load();
+</script>
+</body>
+</html>
