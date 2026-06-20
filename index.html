@@ -199,8 +199,8 @@ body{font-family:Tahoma,'Segoe UI',sans-serif;direction:rtl;font-size:13px;backg
       <button class="icon-btn" onclick="assignCatToSel()" id="assignBtn" style="display:none"><i class="ti ti-tag"></i> دسته‌بندی</button>
       <button class="icon-btn danger" onclick="delSelected()" id="delSelBtn" style="display:none"><i class="ti ti-trash"></i> حذف انتخاب‌شده‌ها</button>
       <button class="icon-btn" onclick="selAll(false)" id="clearSelBtn" style="display:none"><i class="ti ti-x"></i> لغو انتخاب</button>
-      <button class="icon-btn" onclick="load()" title="بارگذاری مجدد از سرور"><i class="ti ti-refresh"></i> بروزرسانی</button>
-      <button class="icon-btn" onclick="backupAll()" title="دانلود پشتیبان کامل (DXF + اطلاعات)"><i class="ti ti-database-export"></i> پشتیبان‌گیری</button>
+      <button class="icon-btn" onclick="backupGallery()" title="دانلود پشتیبان کامل گالری (JSON)"><i class="ti ti-database-export"></i> پشتیبان‌گیری</button>
+      <label class="icon-btn" title="بارگذاری پشتیبان JSON" style="cursor:pointer"><i class="ti ti-database-import"></i> بازیابی<input type="file" accept=".json" onchange="restoreGallery(event)" style="display:none"></label>
       <button class="icon-btn primary" onclick="document.getElementById('fi').click()"><i class="ti ti-file-upload"></i> آپلود DXF</button>
     </div>
     <div class="progress" id="pb"><div class="pfill" id="pf" style="width:0%"></div></div>
@@ -441,139 +441,58 @@ let designs=[], categories=[], selIds=new Set(), activeCat='all', cardSize='L';
 let assignTargetIds=[], assignChosen='', ctxCatId='', dragDesignId='';
 
 // ═══════════════════════════════════════════════
-// STORAGE (SUPABASE — دیتابیس ابری + فضای ذخیره فایل)
+// STORAGE (PRO INDUSTRIAL-GRADE INDEXEDDB)
 // ═══════════════════════════════════════════════
-const SB_URL = 'https://uhofpucwpikudqugodcn.supabase.co';
-const SB_KEY = 'sb_publishable_-Ru1QsLijUXolslJC9zkXw_bv73EqPB';
-const SB_BUCKET = 'dxf-files';
+const DB_NAME = 'CNCLAND_DXF_DB';
+const DB_VER = 1;
 
-const sbH = () => ({'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY});
-
-async function sbSelect(table, filter='', order=''){
-  const orderStr = order ? `&order=${order}` : (table!=='dxf_categories' ? '&order=created_at.desc' : '');
-  const res = await fetch(`${SB_URL}/rest/v1/${table}?${filter}${orderStr}`, {headers:{...sbH(),'Prefer':'return=representation'}});
-  if(!res.ok) throw new Error(await res.text());
-  return res.json();
-}
-async function sbUpsert(table, row){
-  const res = await fetch(`${SB_URL}/rest/v1/${table}`, {
-    method:'POST',
-    headers:{...sbH(),'Prefer':'resolution=merge-duplicates,return=representation'},
-    body: JSON.stringify(row)
+function initDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB_NAME, DB_VER);
+    req.onupgradeneeded = e => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains('designs')) db.createObjectStore('designs', { keyPath: 'id' });
+      if (!db.objectStoreNames.contains('categories')) db.createObjectStore('categories', { keyPath: 'id' });
+    };
+    req.onsuccess = e => resolve(e.target.result);
+    req.onerror = e => reject(e.target.error);
   });
-  if(!res.ok) throw new Error(await res.text());
-  return res.json();
-}
-async function sbDelete(table, id){
-  const res = await fetch(`${SB_URL}/rest/v1/${table}?id=eq.${encodeURIComponent(id)}`, {method:'DELETE', headers:sbH()});
-  if(!res.ok) throw new Error(await res.text());
-}
-async function sbUploadFile(path, fileContent){
-  const res = await fetch(`${SB_URL}/storage/v1/object/${SB_BUCKET}/${path}`, {
-    method:'POST',
-    headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/dxf','x-upsert':'true'},
-    body: fileContent
-  });
-  if(!res.ok) throw new Error(await res.text());
-  return `${SB_URL}/storage/v1/object/public/${SB_BUCKET}/${path}`;
-}
-async function sbDeleteFile(path){
-  try{ await fetch(`${SB_URL}/storage/v1/object/${SB_BUCKET}/${path}`, {method:'DELETE', headers:sbH()}); }catch{}
 }
 
-function setSyncStatus(state, msg){
-  let bar = document.getElementById('sbSyncBar');
-  if(!bar){
-    bar = document.createElement('div');
-    bar.id = 'sbSyncBar';
-    bar.style.cssText = 'position:fixed;top:0;left:0;right:0;height:3px;z-index:9999;transition:.3s;opacity:0;';
-    document.body.appendChild(bar);
-  }
-  if(state==='sync'){ bar.style.background='linear-gradient(90deg,#378ADD,#00F0FF)'; bar.style.opacity='1'; }
-  else if(state==='ok'){ bar.style.opacity='0'; }
-  else if(state==='err'){ bar.style.background='#E24B4A'; bar.style.opacity='1'; toast(msg||'خطا در ارتباط با سرور',4000); }
+function save() {
+  initDB().then(db => {
+    const tx = db.transaction(['designs', 'categories'], 'readwrite');
+    const dStore = tx.objectStore('designs');
+    const cStore = tx.objectStore('categories');
+
+    dStore.clear();
+    designs.forEach(d => dStore.put(d));
+
+    cStore.clear();
+    categories.forEach(c => cStore.put(c));
+  }).catch(e => console.error('خطای ذخیره‌سازی مگا دیتابیس:', e));
 }
 
-function designToRow(d){
-  return {
-    id: d.id, name: d.name, category: d.category || '',
-    layers: d.layers || [], layer_colors: d.layerColors || {},
-    bounds: d.bounds || {}, size: d.size || null,
-    source_file: d.sourceFile || '', storage_path: d.storagePath || null,
-    polylines: d.polylines || []
-  };
-}
-function rowToDesign(r){
-  return {
-    id: r.id, name: r.name, category: r.category || '',
-    layers: r.layers || [], layerColors: r.layer_colors || {},
-    bounds: r.bounds || {}, size: r.size || undefined,
-    sourceFile: r.source_file || '', storagePath: r.storage_path || null,
-    polylines: r.polylines || []
-  };
-}
+function load() {
+  initDB().then(db => {
+    const tx = db.transaction(['designs', 'categories'], 'readonly');
+    const dReq = tx.objectStore('designs').getAll();
+    const cReq = tx.objectStore('categories').getAll();
 
-async function save(){
-  setSyncStatus('sync');
-  try{
-    for(const c of categories){
-      await sbUpsert('dxf_categories', {id:c.id, name:c.name, icon:c.icon, builtin:!!c.builtin, parent_id:c.parentId||null, collapsed:!!c.collapsed});
-    }
-    setSyncStatus('ok');
-  }catch(e){
-    console.error('خطای ذخیره دسته‌بندی:', e);
-    setSyncStatus('err','خطا در ذخیره دسته‌بندی: '+e.message);
-  }
-}
-
-async function saveDesign(d){
-  setSyncStatus('sync');
-  try{
-    await sbUpsert('dxf_designs', designToRow(d));
-    setSyncStatus('ok');
-  }catch(e){
-    console.error('خطای ذخیره طرح:', e);
-    setSyncStatus('err','خطا در ذخیره طرح: '+e.message);
-  }
-}
-
-async function deleteDesignRemote(id, storagePath){
-  setSyncStatus('sync');
-  try{
-    await sbDelete('dxf_designs', id);
-    if(storagePath) await sbDeleteFile(storagePath);
-    setSyncStatus('ok');
-  }catch(e){
-    console.error('خطای حذف طرح:', e);
-    setSyncStatus('err','خطا در حذف طرح: '+e.message);
-  }
-}
-
-async function deleteCategoryRemote(id){
-  try{ await sbDelete('dxf_categories', id); }catch(e){ console.error(e); }
-}
-
-async function load(){
-  setSyncStatus('sync');
-  try{
-    const [designRows, catRows] = await Promise.all([
-      sbSelect('dxf_designs'),
-      sbSelect('dxf_categories')
-    ]);
-    designs = designRows.map(rowToDesign);
-    categories = catRows.map(r => ({id:r.id, name:r.name, icon:r.icon, builtin:r.builtin, parentId:r.parent_id, collapsed:r.collapsed}));
-    if(!categories.length) resetCats();
-    ensureBuiltinCats();
-    setSyncStatus('ok');
-    renderAll();
-  }catch(e){
-    console.error('خطای لود از سرور:', e);
-    setSyncStatus('err','اتصال به سرور برقرار نشد: '+e.message);
+    tx.oncomplete = () => {
+      designs = dReq.result || [];
+      categories = cReq.result || [];
+      if (!categories.length) resetCats();
+      ensureBuiltinCats();
+      renderAll();
+    };
+  }).catch(e => {
+    console.error('خطای لود دیتابیس:', e);
     designs = [];
     resetCats();
     ensureBuiltinCats();
     renderAll();
-  }
+  });
 }
 
 function resetCats(){categories=[{id:'uncategorized',name:'بدون دسته',icon:'ti-folder-off',builtin:true}];}
@@ -599,26 +518,13 @@ async function handleFiles(files){
     const txt=await f.text();
     prog(30);
     const ds=parseDXF(txt,f.name);
-    // آپلود فایل خام DXF به Storage (یک‌بار به ازای هر فایل منبع، نه هر شیت)
-    let storagePath=null;
-    try{
-      storagePath=`raw/${Date.now()}_${f.name.replace(/[^a-zA-Z0-9._-]/g,'_')}`;
-      await sbUploadFile(storagePath, txt);
-    }catch(e){
-      console.error('خطای آپلود فایل به Storage:', e);
-      toast('هشدار: فایل اصلی در فضای ابری ذخیره نشد، اما طرح‌ها ثبت می‌شوند', 4000);
-      storagePath=null;
-    }
-    ds.forEach(d=>d.storagePath=storagePath);
     designs.push(...ds);
     added+=ds.length;
-    prog(60);
-    // ذخیره هر طرح در دیتابیس
-    for(const d of ds){ await saveDesign(d); }
     prog(80);
   }
   prog(100);
   setTimeout(()=>prog(0),500);
+  save();
   renderAll();
   toast(`${added} فرز کاری/طرح زنی از ${arr.length} فایل لود شد`);
 }
@@ -665,9 +571,8 @@ const ACI=[
 ];
 
 function aciToHex(aci){
-  let n=parseInt(aci);
-  if(isNaN(n)) return null;
-  n=Math.abs(n); // لایه‌های خاموش (Frozen) رنگ منفی دارند؛ مقدار رنگ هنوز معتبر است
+  const n=parseInt(aci);
+  if(isNaN(n)||n<0) return null;
   if(n===0) return '#FFFFFF'; // BYLAYER placeholder
   if(n===256) return null;    // BYLAYER
   if(n===7) return '#FFFFFF';
@@ -991,7 +896,7 @@ function mkCatItem(cat,count,depth=0,hasChildren=false){
     const d=designs.find(x=>x.id===id);
     if(!d) return;
     d.category=(cat.id==='all'||cat.id==='uncategorized')?'':cat.id;
-    saveDesign(d);renderCats();renderGallery();
+    save();renderCats();renderGallery();
     toast(`طرح "${d.name}" به "${cat.name}" منتقل شد`);
   });
   return btn;
@@ -1030,12 +935,9 @@ function deleteCat(id){
     :`دسته "${cat.name}" حذف شود؟${total?` ${total} طرح بدون دسته می‌شوند.`:''}`;
   if(!confirm(msg)) return;
   const allDel=[id,...subIds];
-  const affected=designs.filter(d=>allDel.includes(d.category));
-  affected.forEach(d=>d.category='');
+  designs.forEach(d=>{if(allDel.includes(d.category)) d.category='';});
   categories=categories.filter(c=>!allDel.includes(c.id));
   if(allDel.includes(activeCat)) activeCat='all';
-  affected.forEach(d=>saveDesign(d));
-  allDel.forEach(cid=>deleteCategoryRemote(cid));
   save();renderCats();renderGallery();
   toast(`دسته "${cat.name}" حذف شد`);
 }
@@ -1195,16 +1097,15 @@ function drawCanvas(canvas,d,h){
   ctx.strokeRect(tx(b.minX),ty(b.maxY),bw*sc,bh*sc);
   ctx.setLineDash([]);
   
-  // اولویت رنگ: نگاشت نام لایه (دقیق‌ترین در فایل‌های این نرم‌افزار CNC) > رنگ لایه از TABLES > رنگ entity > پالت پشتیبان
-  // نکته: نرم‌افزار CNC این پروژه معمولاً رنگ entity (۶۲) را برابر «۱-قرمز» صادر می‌کند صرف‌نظر از لایه،
-  // و بخش TABLES هم اغلب «۷-سفید» برای همه لایه‌ها دارد. تنها سیگنال واقعی، نام خود لایه است.
+  // اولویت رنگ: نام لایه (معتبرترین در فایل‌های CNC) > TABLES > entity
+  // نرم‌افزار CNC رنگ entity را همیشه قرمز (ACI=1) صادر می‌کند — غیرقابل اعتماد
   const layerColors=d.layerColors||{};
   const fallbackPalette=['#38BDF8','#4ADE80','#FB923C','#F472B6','#A78BFA','#FB7185','#34D399','#FACC15','#E2E8F0','#60A5FA'];
   const fallbackMap={};
   d.layers.forEach((l,idx)=>{fallbackMap[l.name]=fallbackPalette[idx%fallbackPalette.length];});
 
   function getColor(p){
-    // ۱. نگاشت ثابت اسامی شناخته‌شده (case-sensitive) — معتبرترین منبع برای این نوع فایل‌ها
+    // ۱. نگاشت ثابت اسامی شناخته‌شده — معتبرترین منبع
     if(LAYER_COLOR_MAP[p.layer]) return LAYER_COLOR_MAP[p.layer];
     // ۲. تشخیص هوشمند بر اساس پیشوند نام لایه
     const ln=p.layer.toLowerCase();
@@ -1226,11 +1127,11 @@ function drawCanvas(canvas,d,h){
     if(ln.startsWith('vector'))        return '#CC0000';
     if(ln==='sheet')                   return '#888888';
     if(ln==='0')                       return '#FFFFFF';
-    // ۳. رنگ لایه از بخش TABLES فایل DXF (فقط اگر معنادار و غیر-سفید/سیاه باشد)
+    // ۳. رنگ لایه از TABLES (فقط اگر معنادار باشد)
     if(layerColors[p.layer]&&layerColors[p.layer]!=='#FFFFFF'&&layerColors[p.layer]!=='#000000') return layerColors[p.layer];
-    // ۴. رنگ مستقیم entity (group code 62) — کمترین اولویت چون در این فایل‌ها غیرقابل اعتماد است
-    if(p.color&&p.color!=='#FFFFFF'&&p.color!=='#000000') return p.color;
-    // ۵. پالت پشتیبان برای لایه‌های کاملاً ناشناخته
+    // ۴. رنگ entity — کمترین اولویت (در این نوع فایل‌ها غیرقابل اعتماد)
+    if(p.color&&p.color!=='#FFFFFF'&&p.color!=='#000000'&&p.color!=='#FF0000') return p.color;
+    // ۵. پالت پشتیبان برای لایه‌های ناشناخته
     return fallbackMap[p.layer]||'#E2E8F0';
   }
   
@@ -1408,13 +1309,11 @@ function delSelected(){
   const n=selIds.size;
   if(!n) return;
   if(!confirm(`${n} طرح انتخاب‌شده حذف شوند؟`)) return;
-  const toDelete=designs.filter(d=>selIds.has(d.id));
   designs=designs.filter(d=>!selIds.has(d.id));
   selIds.clear();
-  renderCats();renderGallery();
+  save();renderCats();renderGallery();
   updateSelUI();
   toast(`${n} طرح حذف شد`);
-  toDelete.forEach(d=>deleteDesignRemote(d.id, d.storagePath));
 }
 
 // ═══════════════════════════════════════════════
@@ -1453,25 +1352,21 @@ function openModal(ids){
 function closeModal(){document.getElementById('catModal').classList.remove('show');}
 function confirmAssign(){
   if(assignChosen==='__NONE__'){toast('یک دسته انتخاب کنید');return;}
-  const affected=[];
-  assignTargetIds.forEach(id=>{const d=designs.find(x=>x.id===id);if(d){d.category=assignChosen;affected.push(d);}});
+  assignTargetIds.forEach(id=>{const d=designs.find(x=>x.id===id);if(d) d.category=assignChosen;});
   selIds.clear();
   closeModal();closeDetail();
-  renderCats();renderGallery();
+  save();renderCats();renderGallery();
   toast(`${assignTargetIds.length} فایل با موفقیت دسته‌بندی شد`);
-  affected.forEach(d=>saveDesign(d));
 }
 
 function renameD(id,name){
   const d=designs.find(x=>x.id===id);
-  if(d){d.name=name.trim()||d.name;saveDesign(d);renderGallery();}
+  if(d){d.name=name.trim()||d.name;save();renderGallery();}
 }
 function delDesign(id){
   if(!confirm('این نقشه از گالری حذف شود؟')) return;
-  const d=designs.find(x=>x.id===id);
   designs=designs.filter(x=>x.id!==id);selIds.delete(id);
-  renderCats();renderGallery();
-  if(d) deleteDesignRemote(d.id, d.storagePath);
+  save();renderCats();renderGallery();
 }
 
 // ═══════════════════════════════════════════════
@@ -1515,65 +1410,49 @@ function exportOne(id){
 // UPLOAD ZONE DROP-AREA
 // ═══════════════════════════════════════════════
 // ═══════════════════════════════════════════════
-// BACKUP SYSTEM (دانلود پشتیبان کامل)
+// پشتیبان‌گیری و بازیابی (JSON)
 // ═══════════════════════════════════════════════
-async function backupAll(){
+function backupGallery(){
   if(!designs.length){toast('هیچ طرحی برای پشتیبان‌گیری وجود ندارد');return;}
-  toast('در حال تهیه پشتیبان... این ممکن است کمی طول بکشد',5000);
-  try{
-    const JSZipMod = await loadJSZip();
-    const zip = new JSZipMod();
-
-    // ۱. فایل JSON شامل metadata کامل (دسته‌ها + طرح‌ها بدون هندسه سنگین تکراری در صورت وجود فایل خام)
-    const metaData = {
-      exportedAt: new Date().toISOString(),
-      categories: categories,
-      designs: designs.map(d=>({...d}))
-    };
-    zip.file('gallery_data.json', JSON.stringify(metaData, null, 2));
-
-    // ۲. فایل‌های DXF خام از Storage (یکتا بر اساس storagePath، چون چند شیت ممکنه یک فایل مشترک داشته باشن)
-    const uniquePaths = [...new Set(designs.map(d=>d.storagePath).filter(Boolean))];
-    let done=0;
-    for(const path of uniquePaths){
-      try{
-        const res = await fetch(`${SB_URL}/storage/v1/object/public/${SB_BUCKET}/${path}`);
-        if(res.ok){
-          const blob = await res.blob();
-          const filename = path.split('/').pop();
-          zip.file('dxf_files/'+filename, blob);
-        }
-      }catch(e){ console.error('خطا در دریافت فایل پشتیبان:', path, e); }
-      done++;
-      prog(Math.round(10+ (done/uniquePaths.length)*80));
-    }
-
-    const content = await zip.generateAsync({type:'blob'});
-    const a=document.createElement('a');
-    a.href=URL.createObjectURL(content);
-    a.download=`cnc_land_dxf_backup_${new Date().toISOString().slice(0,10)}.zip`;
-    a.click();
-    prog(0);
-    toast(`پشتیبان شامل ${designs.length} طرح و ${uniquePaths.length} فایل DXF دانلود شد ✓`);
-  }catch(e){
-    console.error('خطای پشتیبان‌گیری:', e);
-    toast('خطا در پشتیبان‌گیری: '+e.message, 5000);
-  }
+  const data={
+    version:'DXF_GALLERY_BACKUP_v6',
+    exportedAt:new Date().toISOString(),
+    categories:categories,
+    designs:designs
+  };
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`dxf_gallery_backup_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  toast(`پشتیبان شامل ${designs.length} طرح و ${categories.length} دسته دانلود شد ✓`);
 }
 
-// بارگذاری کتابخانه JSZip فقط در صورت نیاز (lazy load)
-let _jszipPromise=null;
-function loadJSZip(){
-  if(window.JSZip) return Promise.resolve(window.JSZip);
-  if(_jszipPromise) return _jszipPromise;
-  _jszipPromise = new Promise((resolve,reject)=>{
-    const s=document.createElement('script');
-    s.src='https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
-    s.onload=()=>resolve(window.JSZip);
-    s.onerror=()=>reject(new Error('بارگذاری کتابخانه فشرده‌سازی ناموفق بود'));
-    document.head.appendChild(s);
-  });
-  return _jszipPromise;
+function restoreGallery(event){
+  const file=event.target.files[0];
+  if(!file)return;
+  const r=new FileReader();
+  r.onload=e=>{
+    try{
+      const data=JSON.parse(e.target.result);
+      if(!data.designs||!Array.isArray(data.designs)){toast('❌ فایل پشتیبان معتبر نیست');return;}
+      if(!confirm(`⚠️ بازیابی ${data.designs.length} طرح و ${(data.categories||[]).length} دسته؟\nگالری فعلی جایگزین می‌شود.`))return;
+      designs=data.designs;
+      if(data.categories&&data.categories.length){
+        categories=data.categories;
+      }else{
+        resetCats();
+      }
+      ensureBuiltinCats();
+      save();
+      renderAll();
+      toast(`✓ ${designs.length} طرح و ${categories.length} دسته بازیابی شد`);
+    }catch(err){
+      toast('❌ خطا در خواندن فایل: '+err.message);
+    }
+  };
+  r.readAsText(file);
+  event.target.value='';
 }
 
 function mkUploadZone(){
@@ -1666,15 +1545,6 @@ function _resetVoiceBtn(btn){
   .voice-recording{border-color:#E24B4A!important;box-shadow:0 0 0 2px rgba(226,75,74,0.3)!important;}`;
   document.head.appendChild(s);
 })();
-
-// ═══════════════════════════════════════════════
-// PWA SERVICE WORKER
-// ═══════════════════════════════════════════════
-if('serviceWorker' in navigator){
-  window.addEventListener('load',()=>{
-    navigator.serviceWorker.register('sw.js').then(()=>console.log('SW registered')).catch(()=>{});
-  });
-}
 
 // ═══════════════════════════════════════════════
 // AUTOMATIC ENGINE INITIALIZATION
